@@ -214,8 +214,8 @@ int main(int argc, char *argv[]) {
   // srand(time(NULL));
   srand(20210930);
 
-  double total_time;
-  long total_flops;
+  double total_time = 0.0;
+  long total_flops = 0;
 
   long istride;
   long fstride;
