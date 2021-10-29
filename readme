@@ -1,2 +1,9 @@
 Benchmark mode: ./winograd small.conf 0
 Validation mode: ./winograd small.conf 1
+
+
+# develop guide
+
+Build: ./regression.sh rebuild
+Benchmark: ./regression.sh benchmark
+Before commit, run: ./regression.sh testrelease

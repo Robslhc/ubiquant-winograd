@@ -28,7 +28,7 @@ void sgemm(const float *A, const float *B, float *out, const int M, const int K,
   for (int k = 0; k < K; ++k)
     for (int j = 0; j < N; ++j)
       for (int i = 0; i < M; ++i)
-          out[i * N + j]  += A[i * K + k] * B[k * N + j];
+        out[i * N + j] += A[i * K + k] * B[k * N + j];
 }
 
 // User API for winograd F(2,3)
@@ -48,8 +48,8 @@ void winconv_2x3(float *__restrict__ image, const int inHeight,
   const int sizeO = outHeight * outWidth;
   const int P = outHeight / 2 * outWidth / 2 * N;
 
-  float tmp_u[12];  // 4 * 3
-  float u[16];      // 4 * 4;
+  float tmp_u[12]; // 4 * 3
+  float u[16];     // 4 * 4;
   // U[:, :, k, c] = G * filters[k, c, :, :] * G.T()
   for (int k = 0; k < K; ++k) {
     for (int c = 0; c < C; ++c) {
@@ -63,8 +63,8 @@ void winconv_2x3(float *__restrict__ image, const int inHeight,
   }
   // V[:, :, c, p] = B_T * image[c, b, :, :] * B
   float tmp_v[16];
-  float d[16];  // d: [4 * 4];
-  float v[16];  // v: [4 * 4];
+  float d[16]; // d: [4 * 4];
+  float v[16]; // v: [4 * 4];
 
   for (int n = 0; n < N; ++n)
     for (int c = 0; c < C; ++c) {
@@ -96,9 +96,9 @@ void winconv_2x3(float *__restrict__ image, const int inHeight,
   }
 
   // Y = A_T * m * A
-  float mm[16];       // 4 * 4
-  float temp_out[4];  // 2 * 2
-  float tmp_m[8];     // 2 * 4
+  float mm[16];      // 4 * 4
+  float temp_out[4]; // 2 * 2
+  float tmp_m[8];    // 2 * 4
   for (int n = 0; n < N; ++n)
     for (int k = 0; k < K; ++k) {
       for (int y = 0; y < outHeight / 2; ++y) {

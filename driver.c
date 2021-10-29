@@ -23,7 +23,8 @@ inline double timestamp() {
 
 inline void no4k_aligned(long *num) {
   long flag = *num;
-  if (flag % 4096 == 0) (*num) += 128;
+  if (flag % 4096 == 0)
+    (*num) += 128;
 }
 
 void winograd_init(const int layer_num, const int Batch[], const int C[],
@@ -36,13 +37,16 @@ void winograd_init(const int layer_num, const int Batch[], const int C[],
 
   for (int i = 0; i < layer_num; i++) {
     tmp = Batch[i] * (H[i] - 2) / 2 * (W[i] - 2) / 2 * C[i];
-    if (tmp > istride) istride = tmp;
+    if (tmp > istride)
+      istride = tmp;
 
     tmp = C[i] * K[i];
-    if (tmp > fstride) fstride = tmp;
+    if (tmp > fstride)
+      fstride = tmp;
 
     tmp = Batch[i] * (H[i] - 2) / 2 * (W[i] - 2) / 2 * K[i];
-    if (tmp > ostride) ostride = tmp;
+    if (tmp > ostride)
+      ostride = tmp;
   }
 
   no4k_aligned(&istride);
@@ -124,23 +128,24 @@ void winograd_conv(const int layer_idx, const int validation_mode,
   M = (float *)aligned_alloc(64, sizeof(float) * 4 * 4 * K * P);
 
 #pragma omp parallel for private(i)
-  for (long i = 0; i < batch * C * sizeI; i++) image[i] = (float)(i % 10 + 1);
+  for (long i = 0; i < batch * C * sizeI; i++)
+    image[i] = (float)(i % 10 + 1);
     // image[i] = rand()%10;
 #pragma omp parallel for private(i)
-  for (long i = 0; i < K * C * sizeF; i++) filter[i] = (float)(i / sizeF + 1);
+  for (long i = 0; i < K * C * sizeF; i++)
+    filter[i] = (float)(i / sizeF + 1);
   // filter[i] = rand()%10;
 
   // Warm up
   winconv_2x3(image, irows, icols, C, filter, K, batch, out, U, V, M);
-  if (validation_mode) {  // Verify mode. Check the result
+  if (validation_mode) { // Verify mode. Check the result
     float *out_ref = (float *)malloc(batch * K * sizeO * sizeof(float));
     memset(out_ref, 0, batch * K * sizeO * sizeof(float));
 
     naive_conv(image, filter, out_ref, batch, C, irows, icols, K);
-    printf(
-        "Layer %-2d: (Channel Height Weight Filter Batch) = "
-        "(%-3d %-3d %-3d %-3d %-3d) : ",
-        layer_idx, C, irows, icols, K, batch);
+    printf("Layer %-2d: (Channel Height Weight Filter Batch) = "
+           "(%-3d %-3d %-3d %-3d %-3d) : ",
+           layer_idx, C, irows, icols, K, batch);
     long n;
     for (n = 0; n < batch * sizeO * K; n++)
       if (fabs((out[n] - out_ref[n]) / out_ref[n]) > 1e-4) {
@@ -150,9 +155,10 @@ void winograd_conv(const int layer_idx, const int validation_mode,
             n, out[n], n, out_ref[n]);
         break;
       }
-    if (n == batch * sizeO * K) printf("Validation Passed !\n");
+    if (n == batch * sizeO * K)
+      printf("Validation Passed !\n");
     free(out_ref);
-  } else {  // Benchmark mode
+  } else { // Benchmark mode
     double start_time = timestamp();
     for (int i = 0; i < LOOP_NUM; i++) {
       winconv_2x3(image, irows, icols, C, filter, K, batch, out, U, V, M);
@@ -189,8 +195,9 @@ int main(int argc, char *argv[]) {
     printf("File open failed. Aborting...\n");
     exit(-1);
   }
-  int validation_mode = 0;  // 0 : benchmark mode, 1: validation mode
-  if (argc > 2) validation_mode = atoi(argv[2]);
+  int validation_mode = 0; // 0 : benchmark mode, 1: validation mode
+  if (argc > 2)
+    validation_mode = atoi(argv[2]);
 
   int layer_num, batch;
   fscanf(input, "%d", &layer_num);
@@ -199,11 +206,11 @@ int main(int argc, char *argv[]) {
     fclose(input);
     exit(1);
   }
-  int *C_arr = (int *)malloc(sizeof(int) * layer_num);      // Channel
-  int *H_arr = (int *)malloc(sizeof(int) * layer_num);      // Image Height
-  int *W_arr = (int *)malloc(sizeof(int) * layer_num);      // Image Width
-  int *K_arr = (int *)malloc(sizeof(int) * layer_num);      // Filters
-  int *Batch_arr = (int *)malloc(sizeof(int) * layer_num);  // Batch
+  int *C_arr = (int *)malloc(sizeof(int) * layer_num);     // Channel
+  int *H_arr = (int *)malloc(sizeof(int) * layer_num);     // Image Height
+  int *W_arr = (int *)malloc(sizeof(int) * layer_num);     // Image Width
+  int *K_arr = (int *)malloc(sizeof(int) * layer_num);     // Filters
+  int *Batch_arr = (int *)malloc(sizeof(int) * layer_num); // Batch
 
   for (int l = 0; l < layer_num; ++l) {
     fscanf(input, "%d%d%d%d%d", &C_arr[l], &H_arr[l], &W_arr[l], &K_arr[l],
@@ -233,10 +240,15 @@ int main(int argc, char *argv[]) {
     printf("Total elapse time: %lf. ( %7.2lf GFlops) \n", total_time,
            (double)total_flops * 1.0e-9 / total_time);
 
-  if (C_arr) free(C_arr);
-  if (H_arr) free(H_arr);
-  if (W_arr) free(W_arr);
-  if (K_arr) free(K_arr);
-  if (Batch_arr) free(Batch_arr);
+  if (C_arr)
+    free(C_arr);
+  if (H_arr)
+    free(H_arr);
+  if (W_arr)
+    free(W_arr);
+  if (K_arr)
+    free(K_arr);
+  if (Batch_arr)
+    free(Batch_arr);
   return 0;
 }
