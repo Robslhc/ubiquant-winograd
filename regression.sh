@@ -19,7 +19,6 @@ elif [ $1 == "testrelease" ]; then
 
     build/winograd small.conf 1
     build/winograd realworld.conf 1
-fi
 elif [ $1 == "build" ]; then
     if [ ! -d "build" ]; then
         mkdir build; cd build;
