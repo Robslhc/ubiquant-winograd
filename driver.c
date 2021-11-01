@@ -112,11 +112,11 @@ void winograd_conv(const int layer_idx, const int validation_mode,
   int ret;
 
   float *image, *filter, *out;
-  image = (float *)aligned_alloc(64, batch * C * sizeI * sizeof(float));
+  image = (float *)malloc(batch * C * sizeI * sizeof(float));
   assert(image != NULL);
-  filter = (float *)aligned_alloc(64, K * C * sizeF * sizeof(float));
+  filter = (float *)malloc(K * C * sizeF * sizeof(float));
   assert(filter != NULL);
-  out = (float *)aligned_alloc(64, batch * K * sizeO * sizeof(float));
+  out = (float *)malloc(batch * K * sizeO * sizeof(float));
   assert(out != NULL);
 #ifndef WINO_B4
   float *U, *V, *M;
@@ -161,17 +161,13 @@ void winograd_conv(const int layer_idx, const int validation_mode,
            layer_idx, C, irows, icols, K, batch);
     long n;
     for (n = 0; n < batch * sizeO * K; n++)
-#ifndef __DEBUG
       if (fabs((out[n] - out_ref[n]) / out_ref[n]) > 1e-4) {
-#endif
         printf(
             "Validation Failed ! winogradConv[%d] = %f || directConv[%d] = %f "
             "\n",
             n, out[n], n, out_ref[n]);
-#ifndef __DEBUG
         break;
       }
-#endif
     if (n == batch * sizeO * K)
       printf("Validation Passed !\n");
     free(out_ref);
@@ -251,12 +247,12 @@ int main(int argc, char *argv[]) {
   double total_time = 0.0;
   long total_flops = 0;
 
-  long istride;
-  long fstride;
-  long ostride;
+  // long istride;
+  // long fstride;
+  // long ostride;
 
-  winograd_init(layer_num, Batch_arr, C_arr, H_arr, W_arr, K_arr, &istride,
-                &fstride, &ostride);
+  // winograd_init(layer_num, Batch_arr, C_arr, H_arr, W_arr, K_arr, &istride,
+  //               &fstride, &ostride);
 
   for (int l = 0; l < layer_num; l++) {
     winograd_conv(l, validation_mode, H_arr[l], W_arr[l], C_arr[l], K_arr[l],
