@@ -25,7 +25,7 @@ else ()
 endif()
 
 # enable avx512
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mavx -mavx512f -fsanitize=address")
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mavx -mavx512f")
 
 # enable openmp
 # find_package(OpenMP)
