@@ -38,8 +38,8 @@ typedef struct
 
 #define WINOGRAD_B4F3_T14O32_KERNEL_AVX512_IC_COMPUTE(T_LEN, IC_SRC, IC_FLT)   \
   do {                                                                         \
-    zmm28 = _mm512_loadu_ps(IC_FLT + 0 * flt_ocb_stride);                      \
-    zmm29 = _mm512_loadu_ps(IC_FLT + 1 * flt_ocb_stride);                      \
+    zmm28 = _mm512_load_ps(IC_FLT + 0 * flt_ocb_stride);                      \
+    zmm29 = _mm512_load_ps(IC_FLT + 1 * flt_ocb_stride);                      \
     if (T_LEN > 12) {                                                          \
       _mm_prefetch((const char *)(IC_FLT + 0 * flt_ocb_stride +                \
                                   KERNEL_ONE_REG * KERNEL_ONE_REG),            \
@@ -125,62 +125,62 @@ typedef struct
   if (load_dst) {                                                              \
     float *l_dst = T_DST;                                                      \
     if (T_LEN > 0)                                                             \
-      zmm0 = _mm512_loadu_ps(l_dst + 0 * KERNEL_ONE_REG);                      \
+      zmm0 = _mm512_load_ps(l_dst + 0 * KERNEL_ONE_REG);                      \
     if (T_LEN > 1)                                                             \
-      zmm1 = _mm512_loadu_ps(l_dst + 1 * KERNEL_ONE_REG);                      \
+      zmm1 = _mm512_load_ps(l_dst + 1 * KERNEL_ONE_REG);                      \
     if (T_LEN > 2)                                                             \
-      zmm2 = _mm512_loadu_ps(l_dst + 2 * KERNEL_ONE_REG);                      \
+      zmm2 = _mm512_load_ps(l_dst + 2 * KERNEL_ONE_REG);                      \
     if (T_LEN > 3)                                                             \
-      zmm3 = _mm512_loadu_ps(l_dst + 3 * KERNEL_ONE_REG);                      \
+      zmm3 = _mm512_load_ps(l_dst + 3 * KERNEL_ONE_REG);                      \
     if (T_LEN > 4)                                                             \
-      zmm4 = _mm512_loadu_ps(l_dst + 4 * KERNEL_ONE_REG);                      \
+      zmm4 = _mm512_load_ps(l_dst + 4 * KERNEL_ONE_REG);                      \
     if (T_LEN > 5)                                                             \
-      zmm5 = _mm512_loadu_ps(l_dst + 5 * KERNEL_ONE_REG);                      \
+      zmm5 = _mm512_load_ps(l_dst + 5 * KERNEL_ONE_REG);                      \
     if (T_LEN > 6)                                                             \
-      zmm6 = _mm512_loadu_ps(l_dst + 6 * KERNEL_ONE_REG);                      \
+      zmm6 = _mm512_load_ps(l_dst + 6 * KERNEL_ONE_REG);                      \
     if (T_LEN > 7)                                                             \
-      zmm7 = _mm512_loadu_ps(l_dst + 7 * KERNEL_ONE_REG);                      \
+      zmm7 = _mm512_load_ps(l_dst + 7 * KERNEL_ONE_REG);                      \
     if (T_LEN > 8)                                                             \
-      zmm8 = _mm512_loadu_ps(l_dst + 8 * KERNEL_ONE_REG);                      \
+      zmm8 = _mm512_load_ps(l_dst + 8 * KERNEL_ONE_REG);                      \
     if (T_LEN > 9)                                                             \
-      zmm9 = _mm512_loadu_ps(l_dst + 9 * KERNEL_ONE_REG);                      \
+      zmm9 = _mm512_load_ps(l_dst + 9 * KERNEL_ONE_REG);                      \
     if (T_LEN > 10)                                                            \
-      zmm10 = _mm512_loadu_ps(l_dst + 10 * KERNEL_ONE_REG);                    \
+      zmm10 = _mm512_load_ps(l_dst + 10 * KERNEL_ONE_REG);                    \
     if (T_LEN > 11)                                                            \
-      zmm11 = _mm512_loadu_ps(l_dst + 11 * KERNEL_ONE_REG);                    \
+      zmm11 = _mm512_load_ps(l_dst + 11 * KERNEL_ONE_REG);                    \
     if (T_LEN > 12)                                                            \
-      zmm12 = _mm512_loadu_ps(l_dst + 12 * KERNEL_ONE_REG);                    \
+      zmm12 = _mm512_load_ps(l_dst + 12 * KERNEL_ONE_REG);                    \
     if (T_LEN > 13)                                                            \
-      zmm13 = _mm512_loadu_ps(l_dst + 13 * KERNEL_ONE_REG);                    \
+      zmm13 = _mm512_load_ps(l_dst + 13 * KERNEL_ONE_REG);                    \
     l_dst += dst_ocb_stride;                                                   \
     if (T_LEN > 0)                                                             \
-      zmm14 = _mm512_loadu_ps(l_dst + 0 * KERNEL_ONE_REG);                     \
+      zmm14 = _mm512_load_ps(l_dst + 0 * KERNEL_ONE_REG);                     \
     if (T_LEN > 1)                                                             \
-      zmm15 = _mm512_loadu_ps(l_dst + 1 * KERNEL_ONE_REG);                     \
+      zmm15 = _mm512_load_ps(l_dst + 1 * KERNEL_ONE_REG);                     \
     if (T_LEN > 2)                                                             \
-      zmm16 = _mm512_loadu_ps(l_dst + 2 * KERNEL_ONE_REG);                     \
+      zmm16 = _mm512_load_ps(l_dst + 2 * KERNEL_ONE_REG);                     \
     if (T_LEN > 3)                                                             \
-      zmm17 = _mm512_loadu_ps(l_dst + 3 * KERNEL_ONE_REG);                     \
+      zmm17 = _mm512_load_ps(l_dst + 3 * KERNEL_ONE_REG);                     \
     if (T_LEN > 4)                                                             \
-      zmm18 = _mm512_loadu_ps(l_dst + 4 * KERNEL_ONE_REG);                     \
+      zmm18 = _mm512_load_ps(l_dst + 4 * KERNEL_ONE_REG);                     \
     if (T_LEN > 5)                                                             \
-      zmm19 = _mm512_loadu_ps(l_dst + 5 * KERNEL_ONE_REG);                     \
+      zmm19 = _mm512_load_ps(l_dst + 5 * KERNEL_ONE_REG);                     \
     if (T_LEN > 6)                                                             \
-      zmm20 = _mm512_loadu_ps(l_dst + 6 * KERNEL_ONE_REG);                     \
+      zmm20 = _mm512_load_ps(l_dst + 6 * KERNEL_ONE_REG);                     \
     if (T_LEN > 7)                                                             \
-      zmm21 = _mm512_loadu_ps(l_dst + 7 * KERNEL_ONE_REG);                     \
+      zmm21 = _mm512_load_ps(l_dst + 7 * KERNEL_ONE_REG);                     \
     if (T_LEN > 8)                                                             \
-      zmm22 = _mm512_loadu_ps(l_dst + 8 * KERNEL_ONE_REG);                     \
+      zmm22 = _mm512_load_ps(l_dst + 8 * KERNEL_ONE_REG);                     \
     if (T_LEN > 9)                                                             \
-      zmm23 = _mm512_loadu_ps(l_dst + 9 * KERNEL_ONE_REG);                     \
+      zmm23 = _mm512_load_ps(l_dst + 9 * KERNEL_ONE_REG);                     \
     if (T_LEN > 10)                                                            \
-      zmm24 = _mm512_loadu_ps(l_dst + 10 * KERNEL_ONE_REG);                    \
+      zmm24 = _mm512_load_ps(l_dst + 10 * KERNEL_ONE_REG);                    \
     if (T_LEN > 11)                                                            \
-      zmm25 = _mm512_loadu_ps(l_dst + 11 * KERNEL_ONE_REG);                    \
+      zmm25 = _mm512_load_ps(l_dst + 11 * KERNEL_ONE_REG);                    \
     if (T_LEN > 12)                                                            \
-      zmm26 = _mm512_loadu_ps(l_dst + 12 * KERNEL_ONE_REG);                    \
+      zmm26 = _mm512_load_ps(l_dst + 12 * KERNEL_ONE_REG);                    \
     if (T_LEN > 13)                                                            \
-      zmm27 = _mm512_loadu_ps(l_dst + 13 * KERNEL_ONE_REG);                    \
+      zmm27 = _mm512_load_ps(l_dst + 13 * KERNEL_ONE_REG);                    \
   } else {                                                                     \
     if (T_LEN > 0)                                                             \
       zmm0 = _mm512_setzero_ps();                                              \
@@ -265,62 +265,62 @@ typedef struct
   }                                                                            \
   float *st_dst = T_DST;                                                       \
   if (T_LEN > 0)                                                               \
-    _mm512_storeu_ps(st_dst + 0 * KERNEL_ONE_REG, zmm0);                       \
+    _mm512_store_ps(st_dst + 0 * KERNEL_ONE_REG, zmm0);                       \
   if (T_LEN > 1)                                                               \
-    _mm512_storeu_ps(st_dst + 1 * KERNEL_ONE_REG, zmm1);                       \
+    _mm512_store_ps(st_dst + 1 * KERNEL_ONE_REG, zmm1);                       \
   if (T_LEN > 2)                                                               \
-    _mm512_storeu_ps(st_dst + 2 * KERNEL_ONE_REG, zmm2);                       \
+    _mm512_store_ps(st_dst + 2 * KERNEL_ONE_REG, zmm2);                       \
   if (T_LEN > 3)                                                               \
-    _mm512_storeu_ps(st_dst + 3 * KERNEL_ONE_REG, zmm3);                       \
+    _mm512_store_ps(st_dst + 3 * KERNEL_ONE_REG, zmm3);                       \
   if (T_LEN > 4)                                                               \
-    _mm512_storeu_ps(st_dst + 4 * KERNEL_ONE_REG, zmm4);                       \
+    _mm512_store_ps(st_dst + 4 * KERNEL_ONE_REG, zmm4);                       \
   if (T_LEN > 5)                                                               \
-    _mm512_storeu_ps(st_dst + 5 * KERNEL_ONE_REG, zmm5);                       \
+    _mm512_store_ps(st_dst + 5 * KERNEL_ONE_REG, zmm5);                       \
   if (T_LEN > 6)                                                               \
-    _mm512_storeu_ps(st_dst + 6 * KERNEL_ONE_REG, zmm6);                       \
+    _mm512_store_ps(st_dst + 6 * KERNEL_ONE_REG, zmm6);                       \
   if (T_LEN > 7)                                                               \
-    _mm512_storeu_ps(st_dst + 7 * KERNEL_ONE_REG, zmm7);                       \
+    _mm512_store_ps(st_dst + 7 * KERNEL_ONE_REG, zmm7);                       \
   if (T_LEN > 8)                                                               \
-    _mm512_storeu_ps(st_dst + 8 * KERNEL_ONE_REG, zmm8);                       \
+    _mm512_store_ps(st_dst + 8 * KERNEL_ONE_REG, zmm8);                       \
   if (T_LEN > 9)                                                               \
-    _mm512_storeu_ps(st_dst + 9 * KERNEL_ONE_REG, zmm9);                       \
+    _mm512_store_ps(st_dst + 9 * KERNEL_ONE_REG, zmm9);                       \
   if (T_LEN > 10)                                                              \
-    _mm512_storeu_ps(st_dst + 10 * KERNEL_ONE_REG, zmm10);                     \
+    _mm512_store_ps(st_dst + 10 * KERNEL_ONE_REG, zmm10);                     \
   if (T_LEN > 11)                                                              \
-    _mm512_storeu_ps(st_dst + 11 * KERNEL_ONE_REG, zmm11);                     \
+    _mm512_store_ps(st_dst + 11 * KERNEL_ONE_REG, zmm11);                     \
   if (T_LEN > 12)                                                              \
-    _mm512_storeu_ps(st_dst + 12 * KERNEL_ONE_REG, zmm12);                     \
+    _mm512_store_ps(st_dst + 12 * KERNEL_ONE_REG, zmm12);                     \
   if (T_LEN > 13)                                                              \
-    _mm512_storeu_ps(st_dst + 13 * KERNEL_ONE_REG, zmm13);                     \
+    _mm512_store_ps(st_dst + 13 * KERNEL_ONE_REG, zmm13);                     \
   st_dst += dst_ocb_stride;                                                    \
   if (T_LEN > 0)                                                               \
-    _mm512_storeu_ps(st_dst + 0 * KERNEL_ONE_REG, zmm14);                      \
+    _mm512_store_ps(st_dst + 0 * KERNEL_ONE_REG, zmm14);                      \
   if (T_LEN > 1)                                                               \
-    _mm512_storeu_ps(st_dst + 1 * KERNEL_ONE_REG, zmm15);                      \
+    _mm512_store_ps(st_dst + 1 * KERNEL_ONE_REG, zmm15);                      \
   if (T_LEN > 2)                                                               \
-    _mm512_storeu_ps(st_dst + 2 * KERNEL_ONE_REG, zmm16);                      \
+    _mm512_store_ps(st_dst + 2 * KERNEL_ONE_REG, zmm16);                      \
   if (T_LEN > 3)                                                               \
-    _mm512_storeu_ps(st_dst + 3 * KERNEL_ONE_REG, zmm17);                      \
+    _mm512_store_ps(st_dst + 3 * KERNEL_ONE_REG, zmm17);                      \
   if (T_LEN > 4)                                                               \
-    _mm512_storeu_ps(st_dst + 4 * KERNEL_ONE_REG, zmm18);                      \
+    _mm512_store_ps(st_dst + 4 * KERNEL_ONE_REG, zmm18);                      \
   if (T_LEN > 5)                                                               \
-    _mm512_storeu_ps(st_dst + 5 * KERNEL_ONE_REG, zmm19);                      \
+    _mm512_store_ps(st_dst + 5 * KERNEL_ONE_REG, zmm19);                      \
   if (T_LEN > 6)                                                               \
-    _mm512_storeu_ps(st_dst + 6 * KERNEL_ONE_REG, zmm20);                      \
+    _mm512_store_ps(st_dst + 6 * KERNEL_ONE_REG, zmm20);                      \
   if (T_LEN > 7)                                                               \
-    _mm512_storeu_ps(st_dst + 7 * KERNEL_ONE_REG, zmm21);                      \
+    _mm512_store_ps(st_dst + 7 * KERNEL_ONE_REG, zmm21);                      \
   if (T_LEN > 8)                                                               \
-    _mm512_storeu_ps(st_dst + 8 * KERNEL_ONE_REG, zmm22);                      \
+    _mm512_store_ps(st_dst + 8 * KERNEL_ONE_REG, zmm22);                      \
   if (T_LEN > 9)                                                               \
-    _mm512_storeu_ps(st_dst + 9 * KERNEL_ONE_REG, zmm23);                      \
+    _mm512_store_ps(st_dst + 9 * KERNEL_ONE_REG, zmm23);                      \
   if (T_LEN > 10)                                                              \
-    _mm512_storeu_ps(st_dst + 10 * KERNEL_ONE_REG, zmm24);                     \
+    _mm512_store_ps(st_dst + 10 * KERNEL_ONE_REG, zmm24);                     \
   if (T_LEN > 11)                                                              \
-    _mm512_storeu_ps(st_dst + 11 * KERNEL_ONE_REG, zmm25);                     \
+    _mm512_store_ps(st_dst + 11 * KERNEL_ONE_REG, zmm25);                     \
   if (T_LEN > 12)                                                              \
-    _mm512_storeu_ps(st_dst + 12 * KERNEL_ONE_REG, zmm26);                     \
+    _mm512_store_ps(st_dst + 12 * KERNEL_ONE_REG, zmm26);                     \
   if (T_LEN > 13)                                                              \
-  _mm512_storeu_ps(st_dst + 13 * KERNEL_ONE_REG, zmm27)
+  _mm512_store_ps(st_dst + 13 * KERNEL_ONE_REG, zmm27)
 
 #define WINOGRAD_B4F3_T14O32_KERNEL_AVX512(KERNEL_PARAMS, T_LEN)               \
   __m512 zmm0, zmm1, zmm2, zmm3, zmm4, zmm5, zmm6, zmm7;                       \
@@ -334,19 +334,17 @@ typedef struct
   const float *t_src = KERNEL_PARAMS.src;          \
   float *t_dst = KERNEL_PARAMS.dst;                      \
   int64_t t = KERNEL_PARAMS.tiles;                                            \
-  WINO_DEBUG("init_t = %ld\n", t); \
   do {                                                                         \
     WINOGRAD_B4F3_T14O32_KERNEL_AVX512_ITER_T(KERNEL_PARAMS, T_LEN, t_src,     \
                                               t_dst);                          \
     t_src += src_tkb_stride;                                                   \
     t_dst += T_LEN * KERNEL_ONE_REG;                                           \
     t -= T_LEN;                                                                \
-    WINO_DEBUG("t = %ld\n", t); \
   } while (t > 0)
 
 #define WINOGRAD_B4F3_T31O16_KERNEL_AVX512_IC_COMPUTE(T_LEN, IC_SRC, IC_FLT)   \
   do {                                                                         \
-    zmm31 = _mm512_loadu_ps(IC_FLT);                                           \
+    zmm31 = _mm512_load_ps(IC_FLT);                                           \
     if (T_LEN > 0)                                                             \
       zmm0 = _mm512_fmadd_ps(_mm512_set1_ps(IC_SRC[0 + 0 * KERNEL_ONE_REG]),   \
                              zmm31, zmm0);                                     \
@@ -447,67 +445,67 @@ typedef struct
   if (load_dst) {                                                              \
     const float *l_dst = T_DST;                                                \
     if (T_LEN > 0)                                                             \
-      zmm0 = _mm512_loadu_ps(l_dst + 0 * KERNEL_ONE_REG);                      \
+      zmm0 = _mm512_load_ps(l_dst + 0 * KERNEL_ONE_REG);                      \
     if (T_LEN > 1)                                                             \
-      zmm1 = _mm512_loadu_ps(l_dst + 1 * KERNEL_ONE_REG);                      \
+      zmm1 = _mm512_load_ps(l_dst + 1 * KERNEL_ONE_REG);                      \
     if (T_LEN > 2)                                                             \
-      zmm2 = _mm512_loadu_ps(l_dst + 2 * KERNEL_ONE_REG);                      \
+      zmm2 = _mm512_load_ps(l_dst + 2 * KERNEL_ONE_REG);                      \
     if (T_LEN > 3)                                                             \
-      zmm3 = _mm512_loadu_ps(l_dst + 3 * KERNEL_ONE_REG);                      \
+      zmm3 = _mm512_load_ps(l_dst + 3 * KERNEL_ONE_REG);                      \
     if (T_LEN > 4)                                                             \
-      zmm4 = _mm512_loadu_ps(l_dst + 4 * KERNEL_ONE_REG);                      \
+      zmm4 = _mm512_load_ps(l_dst + 4 * KERNEL_ONE_REG);                      \
     if (T_LEN > 5)                                                             \
-      zmm5 = _mm512_loadu_ps(l_dst + 5 * KERNEL_ONE_REG);                      \
+      zmm5 = _mm512_load_ps(l_dst + 5 * KERNEL_ONE_REG);                      \
     if (T_LEN > 6)                                                             \
-      zmm6 = _mm512_loadu_ps(l_dst + 6 * KERNEL_ONE_REG);                      \
+      zmm6 = _mm512_load_ps(l_dst + 6 * KERNEL_ONE_REG);                      \
     if (T_LEN > 7)                                                             \
-      zmm7 = _mm512_loadu_ps(l_dst + 7 * KERNEL_ONE_REG);                      \
+      zmm7 = _mm512_load_ps(l_dst + 7 * KERNEL_ONE_REG);                      \
     if (T_LEN > 8)                                                             \
-      zmm8 = _mm512_loadu_ps(l_dst + 8 * KERNEL_ONE_REG);                      \
+      zmm8 = _mm512_load_ps(l_dst + 8 * KERNEL_ONE_REG);                      \
     if (T_LEN > 9)                                                             \
-      zmm9 = _mm512_loadu_ps(l_dst + 9 * KERNEL_ONE_REG);                      \
+      zmm9 = _mm512_load_ps(l_dst + 9 * KERNEL_ONE_REG);                      \
     if (T_LEN > 10)                                                            \
-      zmm10 = _mm512_loadu_ps(l_dst + 10 * KERNEL_ONE_REG);                    \
+      zmm10 = _mm512_load_ps(l_dst + 10 * KERNEL_ONE_REG);                    \
     if (T_LEN > 11)                                                            \
-      zmm11 = _mm512_loadu_ps(l_dst + 11 * KERNEL_ONE_REG);                    \
+      zmm11 = _mm512_load_ps(l_dst + 11 * KERNEL_ONE_REG);                    \
     if (T_LEN > 12)                                                            \
-      zmm12 = _mm512_loadu_ps(l_dst + 12 * KERNEL_ONE_REG);                    \
+      zmm12 = _mm512_load_ps(l_dst + 12 * KERNEL_ONE_REG);                    \
     if (T_LEN > 13)                                                            \
-      zmm13 = _mm512_loadu_ps(l_dst + 13 * KERNEL_ONE_REG);                    \
+      zmm13 = _mm512_load_ps(l_dst + 13 * KERNEL_ONE_REG);                    \
     if (T_LEN > 14)                                                            \
-      zmm14 = _mm512_loadu_ps(l_dst + 14 * KERNEL_ONE_REG);                    \
+      zmm14 = _mm512_load_ps(l_dst + 14 * KERNEL_ONE_REG);                    \
     if (T_LEN > 15)                                                            \
-      zmm15 = _mm512_loadu_ps(l_dst + 15 * KERNEL_ONE_REG);                    \
+      zmm15 = _mm512_load_ps(l_dst + 15 * KERNEL_ONE_REG);                    \
     if (T_LEN > 16)                                                            \
-      zmm16 = _mm512_loadu_ps(l_dst + 16 * KERNEL_ONE_REG);                    \
+      zmm16 = _mm512_load_ps(l_dst + 16 * KERNEL_ONE_REG);                    \
     if (T_LEN > 17)                                                            \
-      zmm17 = _mm512_loadu_ps(l_dst + 17 * KERNEL_ONE_REG);                    \
+      zmm17 = _mm512_load_ps(l_dst + 17 * KERNEL_ONE_REG);                    \
     if (T_LEN > 18)                                                            \
-      zmm18 = _mm512_loadu_ps(l_dst + 18 * KERNEL_ONE_REG);                    \
+      zmm18 = _mm512_load_ps(l_dst + 18 * KERNEL_ONE_REG);                    \
     if (T_LEN > 19)                                                            \
-      zmm19 = _mm512_loadu_ps(l_dst + 19 * KERNEL_ONE_REG);                    \
+      zmm19 = _mm512_load_ps(l_dst + 19 * KERNEL_ONE_REG);                    \
     if (T_LEN > 20)                                                            \
-      zmm20 = _mm512_loadu_ps(l_dst + 20 * KERNEL_ONE_REG);                    \
+      zmm20 = _mm512_load_ps(l_dst + 20 * KERNEL_ONE_REG);                    \
     if (T_LEN > 21)                                                            \
-      zmm21 = _mm512_loadu_ps(l_dst + 21 * KERNEL_ONE_REG);                    \
+      zmm21 = _mm512_load_ps(l_dst + 21 * KERNEL_ONE_REG);                    \
     if (T_LEN > 22)                                                            \
-      zmm22 = _mm512_loadu_ps(l_dst + 22 * KERNEL_ONE_REG);                    \
+      zmm22 = _mm512_load_ps(l_dst + 22 * KERNEL_ONE_REG);                    \
     if (T_LEN > 23)                                                            \
-      zmm23 = _mm512_loadu_ps(l_dst + 23 * KERNEL_ONE_REG);                    \
+      zmm23 = _mm512_load_ps(l_dst + 23 * KERNEL_ONE_REG);                    \
     if (T_LEN > 24)                                                            \
-      zmm24 = _mm512_loadu_ps(l_dst + 24 * KERNEL_ONE_REG);                    \
+      zmm24 = _mm512_load_ps(l_dst + 24 * KERNEL_ONE_REG);                    \
     if (T_LEN > 25)                                                            \
-      zmm25 = _mm512_loadu_ps(l_dst + 25 * KERNEL_ONE_REG);                    \
+      zmm25 = _mm512_load_ps(l_dst + 25 * KERNEL_ONE_REG);                    \
     if (T_LEN > 26)                                                            \
-      zmm26 = _mm512_loadu_ps(l_dst + 26 * KERNEL_ONE_REG);                    \
+      zmm26 = _mm512_load_ps(l_dst + 26 * KERNEL_ONE_REG);                    \
     if (T_LEN > 27)                                                            \
-      zmm27 = _mm512_loadu_ps(l_dst + 27 * KERNEL_ONE_REG);                    \
+      zmm27 = _mm512_load_ps(l_dst + 27 * KERNEL_ONE_REG);                    \
     if (T_LEN > 28)                                                            \
-      zmm28 = _mm512_loadu_ps(l_dst + 28 * KERNEL_ONE_REG);                    \
+      zmm28 = _mm512_load_ps(l_dst + 28 * KERNEL_ONE_REG);                    \
     if (T_LEN > 29)                                                            \
-      zmm29 = _mm512_loadu_ps(l_dst + 29 * KERNEL_ONE_REG);                    \
+      zmm29 = _mm512_load_ps(l_dst + 29 * KERNEL_ONE_REG);                    \
     if (T_LEN > 30)                                                            \
-      zmm30 = _mm512_loadu_ps(l_dst + 30 * KERNEL_ONE_REG);                    \
+      zmm30 = _mm512_load_ps(l_dst + 30 * KERNEL_ONE_REG);                    \
   } else {                                                                     \
     if (T_LEN > 0)                                                             \
       zmm0 = _mm512_setzero_ps();                                              \
@@ -598,67 +596,67 @@ typedef struct
   }                                                                            \
   float *st_dst = T_DST;                                                       \
   if (T_LEN > 0)                                                               \
-    _mm512_storeu_ps(st_dst + 0 * KERNEL_ONE_REG, zmm0);                       \
+    _mm512_store_ps(st_dst + 0 * KERNEL_ONE_REG, zmm0);                       \
   if (T_LEN > 1)                                                               \
-    _mm512_storeu_ps(st_dst + 1 * KERNEL_ONE_REG, zmm1);                       \
+    _mm512_store_ps(st_dst + 1 * KERNEL_ONE_REG, zmm1);                       \
   if (T_LEN > 2)                                                               \
-    _mm512_storeu_ps(st_dst + 2 * KERNEL_ONE_REG, zmm2);                       \
+    _mm512_store_ps(st_dst + 2 * KERNEL_ONE_REG, zmm2);                       \
   if (T_LEN > 3)                                                               \
-    _mm512_storeu_ps(st_dst + 3 * KERNEL_ONE_REG, zmm3);                       \
+    _mm512_store_ps(st_dst + 3 * KERNEL_ONE_REG, zmm3);                       \
   if (T_LEN > 4)                                                               \
-    _mm512_storeu_ps(st_dst + 4 * KERNEL_ONE_REG, zmm4);                       \
+    _mm512_store_ps(st_dst + 4 * KERNEL_ONE_REG, zmm4);                       \
   if (T_LEN > 5)                                                               \
-    _mm512_storeu_ps(st_dst + 5 * KERNEL_ONE_REG, zmm5);                       \
+    _mm512_store_ps(st_dst + 5 * KERNEL_ONE_REG, zmm5);                       \
   if (T_LEN > 6)                                                               \
-    _mm512_storeu_ps(st_dst + 6 * KERNEL_ONE_REG, zmm6);                       \
+    _mm512_store_ps(st_dst + 6 * KERNEL_ONE_REG, zmm6);                       \
   if (T_LEN > 7)                                                               \
-    _mm512_storeu_ps(st_dst + 7 * KERNEL_ONE_REG, zmm7);                       \
+    _mm512_store_ps(st_dst + 7 * KERNEL_ONE_REG, zmm7);                       \
   if (T_LEN > 8)                                                               \
-    _mm512_storeu_ps(st_dst + 8 * KERNEL_ONE_REG, zmm8);                       \
+    _mm512_store_ps(st_dst + 8 * KERNEL_ONE_REG, zmm8);                       \
   if (T_LEN > 9)                                                               \
-    _mm512_storeu_ps(st_dst + 9 * KERNEL_ONE_REG, zmm9);                       \
+    _mm512_store_ps(st_dst + 9 * KERNEL_ONE_REG, zmm9);                       \
   if (T_LEN > 10)                                                              \
-    _mm512_storeu_ps(st_dst + 10 * KERNEL_ONE_REG, zmm10);                     \
+    _mm512_store_ps(st_dst + 10 * KERNEL_ONE_REG, zmm10);                     \
   if (T_LEN > 11)                                                              \
-    _mm512_storeu_ps(st_dst + 11 * KERNEL_ONE_REG, zmm11);                     \
+    _mm512_store_ps(st_dst + 11 * KERNEL_ONE_REG, zmm11);                     \
   if (T_LEN > 12)                                                              \
-    _mm512_storeu_ps(st_dst + 12 * KERNEL_ONE_REG, zmm12);                     \
+    _mm512_store_ps(st_dst + 12 * KERNEL_ONE_REG, zmm12);                     \
   if (T_LEN > 13)                                                              \
-    _mm512_storeu_ps(st_dst + 13 * KERNEL_ONE_REG, zmm13);                     \
+    _mm512_store_ps(st_dst + 13 * KERNEL_ONE_REG, zmm13);                     \
   if (T_LEN > 14)                                                              \
-    _mm512_storeu_ps(st_dst + 14 * KERNEL_ONE_REG, zmm14);                     \
+    _mm512_store_ps(st_dst + 14 * KERNEL_ONE_REG, zmm14);                     \
   if (T_LEN > 15)                                                              \
-    _mm512_storeu_ps(st_dst + 15 * KERNEL_ONE_REG, zmm15);                     \
+    _mm512_store_ps(st_dst + 15 * KERNEL_ONE_REG, zmm15);                     \
   if (T_LEN > 16)                                                              \
-    _mm512_storeu_ps(st_dst + 16 * KERNEL_ONE_REG, zmm16);                     \
+    _mm512_store_ps(st_dst + 16 * KERNEL_ONE_REG, zmm16);                     \
   if (T_LEN > 17)                                                              \
-    _mm512_storeu_ps(st_dst + 17 * KERNEL_ONE_REG, zmm17);                     \
+    _mm512_store_ps(st_dst + 17 * KERNEL_ONE_REG, zmm17);                     \
   if (T_LEN > 18)                                                              \
-    _mm512_storeu_ps(st_dst + 18 * KERNEL_ONE_REG, zmm18);                     \
+    _mm512_store_ps(st_dst + 18 * KERNEL_ONE_REG, zmm18);                     \
   if (T_LEN > 19)                                                              \
-    _mm512_storeu_ps(st_dst + 19 * KERNEL_ONE_REG, zmm19);                     \
+    _mm512_store_ps(st_dst + 19 * KERNEL_ONE_REG, zmm19);                     \
   if (T_LEN > 20)                                                              \
-    _mm512_storeu_ps(st_dst + 20 * KERNEL_ONE_REG, zmm20);                     \
+    _mm512_store_ps(st_dst + 20 * KERNEL_ONE_REG, zmm20);                     \
   if (T_LEN > 21)                                                              \
-    _mm512_storeu_ps(st_dst + 21 * KERNEL_ONE_REG, zmm21);                     \
+    _mm512_store_ps(st_dst + 21 * KERNEL_ONE_REG, zmm21);                     \
   if (T_LEN > 22)                                                              \
-    _mm512_storeu_ps(st_dst + 22 * KERNEL_ONE_REG, zmm22);                     \
+    _mm512_store_ps(st_dst + 22 * KERNEL_ONE_REG, zmm22);                     \
   if (T_LEN > 23)                                                              \
-    _mm512_storeu_ps(st_dst + 23 * KERNEL_ONE_REG, zmm23);                     \
+    _mm512_store_ps(st_dst + 23 * KERNEL_ONE_REG, zmm23);                     \
   if (T_LEN > 24)                                                              \
-    _mm512_storeu_ps(st_dst + 24 * KERNEL_ONE_REG, zmm24);                     \
+    _mm512_store_ps(st_dst + 24 * KERNEL_ONE_REG, zmm24);                     \
   if (T_LEN > 25)                                                              \
-    _mm512_storeu_ps(st_dst + 25 * KERNEL_ONE_REG, zmm25);                     \
+    _mm512_store_ps(st_dst + 25 * KERNEL_ONE_REG, zmm25);                     \
   if (T_LEN > 26)                                                              \
-    _mm512_storeu_ps(st_dst + 26 * KERNEL_ONE_REG, zmm26);                     \
+    _mm512_store_ps(st_dst + 26 * KERNEL_ONE_REG, zmm26);                     \
   if (T_LEN > 27)                                                              \
-    _mm512_storeu_ps(st_dst + 27 * KERNEL_ONE_REG, zmm27);                     \
+    _mm512_store_ps(st_dst + 27 * KERNEL_ONE_REG, zmm27);                     \
   if (T_LEN > 28)                                                              \
-    _mm512_storeu_ps(st_dst + 28 * KERNEL_ONE_REG, zmm28);                     \
+    _mm512_store_ps(st_dst + 28 * KERNEL_ONE_REG, zmm28);                     \
   if (T_LEN > 29)                                                              \
-    _mm512_storeu_ps(st_dst + 29 * KERNEL_ONE_REG, zmm29);                     \
+    _mm512_store_ps(st_dst + 29 * KERNEL_ONE_REG, zmm29);                     \
   if (T_LEN > 30)                                                              \
-  _mm512_storeu_ps(st_dst + 30 * KERNEL_ONE_REG, zmm30)
+  _mm512_store_ps(st_dst + 30 * KERNEL_ONE_REG, zmm30)
 
 #define WINOGRAD_B4F3_T31O16_KERNEL_AVX512(KERNEL_PARAMS, T_LEN)               \
   __m512 zmm0, zmm1, zmm2, zmm3, zmm4, zmm5, zmm6, zmm7;                       \
@@ -670,14 +668,12 @@ typedef struct
   const float *t_src = KERNEL_PARAMS.src;          \
   float *t_dst = KERNEL_PARAMS.dst;                      \
   int64_t t = KERNEL_PARAMS.tiles;                                            \
-  WINO_DEBUG("init_t = %ld\n", t); \
   do {                                                                         \
     WINOGRAD_B4F3_T31O16_KERNEL_AVX512_ITER_T(KERNEL_PARAMS, T_LEN, t_src,     \
                                               t_dst);                          \
     t_src += src_tkb_stride;                                                   \
     t_dst += T_LEN * KERNEL_ONE_REG;                                           \
     t -= T_LEN;                                                                \
-    WINO_DEBUG("t = %ld\n", t); \
   } while (t > 0)
 
 void winograd_b4f3_srctrans_fp32_avx512(const float *base_src, const int64_t ih,
