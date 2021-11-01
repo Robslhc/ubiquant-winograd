@@ -25,7 +25,7 @@ void winograd_b4f3_srctrans_fp32_avx512(
     WINO_DEBUG("tile_buffer_ptr = %x\n", tile_buffer_ptr);
     for (int64_t h = ih; h < ih + TILE_IN_H; ++h) {
       if (h >= src_h) {
-        memset32_avx(tile_buffer_ptr, 0.0f, tile_h_stride);
+        memset(tile_buffer_ptr, 0, tile_h_stride * sizeof(float));
       } else {
         int64_t tw_start = iw;
         int64_t tw_len = MAX(MIN(src_w, iw + TILE_IN_W) - tw_start, 0);
@@ -34,12 +34,12 @@ void winograd_b4f3_srctrans_fp32_avx512(
         assert(tw_len + tr_pad == TILE_IN_W);
 #endif
         int64_t w = 0;
-        memcpy32_avx(tile_buffer_ptr + w * KERNEL_ONE_REG,
-                     base_src + (h * src_w + tw_start) * KERNEL_ONE_REG,
-                     tw_len * KERNEL_ONE_REG);
+        memcpy(tile_buffer_ptr + w * KERNEL_ONE_REG,
+               base_src + (h * src_w + tw_start) * KERNEL_ONE_REG,
+               tw_len * KERNEL_ONE_REG * sizeof(float));
         w += tw_len;
-        memset32_avx(tile_buffer_ptr + w * KERNEL_ONE_REG, 0.0f,
-                     tr_pad * KERNEL_ONE_REG);
+        memset(tile_buffer_ptr + w * KERNEL_ONE_REG, 0,
+               tr_pad * KERNEL_ONE_REG * sizeof(float));
       }
       tile_buffer_ptr += tile_h_stride;
     }
