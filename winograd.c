@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "wgb2f3/wgb2f3.h"
+
 const float G[4][3] = {
     {1.0, 0.0, 0.0}, {0.5, 0.5, 0.5}, {0.5, -0.5, 0.5}, {0.0, 0.0, 1.0}};
 const float G_T[3][4] = {
