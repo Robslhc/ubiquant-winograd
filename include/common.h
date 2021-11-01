@@ -51,6 +51,7 @@ typedef struct {
   int override_gemm;
   int64_t blk_tile_in_len;
   int64_t blk_matmul_in_len;
+  int64_t src_workspace_len;
   int64_t src_trans_len;
   int64_t gemm_out_len;
   int64_t blk_matmul_out_len;

@@ -79,40 +79,52 @@ WinogradOptParams init_winconv_4x3_params(const int N, const int C, const int K,
              param.oc_l2_blk);
 
   // image permute and cvt filter
-  param.src_permute_len = N * param.padded_ic * H * W;
-  param.dst_permute_len = N * param.padded_oc * dst_h * dst_w;
+  param.src_permute_len = ROUND_UP(N * param.padded_ic * H * W,
+                                   X86_CACHELINE_BYTES / sizeof(float));
+  param.dst_permute_len = ROUND_UP(N * param.padded_oc * dst_h * dst_w,
+                                   X86_CACHELINE_BYTES / sizeof(float));
   if (param.cvt_filter_precomputed) {
     param.cvt_flt_len = 0;
   } else {
-    param.cvt_flt_len = TILE_IN_H * TILE_IN_W * param.padded_oc * param.padded_ic;
+    param.cvt_flt_len = ROUND_UP(TILE_IN_H * TILE_IN_W * param.padded_oc * C,
+                                 X86_CACHELINE_BYTES / sizeof(float));
     WINO_DEBUG("cvt flt len = %ld\n", param.cvt_flt_len);
   }
 
   // used in src trans
-  param.blk_tile_in_len = ROUND_UP(TILE_IN_H * TILE_IN_W * KERNEL_ONE_REG, X86_CACHELINE_BYTES / sizeof(float));
-  param.blk_matmul_in_len = ROUND_UP(TILE_IN_H * TILE_IN_W * KERNEL_ONE_REG, X86_CACHELINE_BYTES / sizeof(float));
+  param.blk_tile_in_len = ROUND_UP(TILE_IN_H * TILE_IN_W * KERNEL_ONE_REG,
+                                   X86_CACHELINE_BYTES / sizeof(float));
+  param.blk_matmul_in_len = ROUND_UP(TILE_IN_H * TILE_IN_W * KERNEL_ONE_REG,
+                                     X86_CACHELINE_BYTES / sizeof(float));
+  param.src_workspace_len = param.blk_tile_in_len + param.blk_matmul_in_len;
 
   // used in gemm
-  param.src_trans_len = ROUND_UP(param.tiles_l2_blk * TILE_IN_H * TILE_IN_W * param.ic_l2_blk, X86_CACHELINE_BYTES / sizeof(float));
+  param.src_trans_len =
+      ROUND_UP(param.tiles_l2_blk * TILE_IN_H * TILE_IN_W * param.ic_l2_blk,
+               X86_CACHELINE_BYTES / sizeof(float));
   if (param.override_gemm) {
-    param.gemm_out_len = ROUND_UP(param.oc_l2_blk * TILE_IN_H * TILE_IN_W * param.tiles_l2_blk, X86_CACHELINE_BYTES / sizeof(float));
+    param.gemm_out_len =
+        ROUND_UP(param.oc_l2_blk * TILE_IN_H * TILE_IN_W * param.tiles_l2_blk,
+                 X86_CACHELINE_BYTES / sizeof(float));
   } else {
-    param.gemm_out_len = ROUND_UP(param.padded_oc * TILE_IN_H * TILE_IN_W * param.tiles_l2_blk, X86_CACHELINE_BYTES / sizeof(float));
+    param.gemm_out_len =
+        ROUND_UP(param.padded_oc * TILE_IN_H * TILE_IN_W * param.tiles_l2_blk,
+                 X86_CACHELINE_BYTES / sizeof(float));
   }
 
   // used in dst trans
-  param.blk_matmul_out_len = ROUND_UP(TILE_IN_H * TILE_IN_W * KERNEL_ONE_REG, X86_CACHELINE_BYTES / sizeof(float));
+  param.blk_matmul_out_len = ROUND_UP(TILE_IN_H * TILE_IN_W * KERNEL_ONE_REG,
+                                      X86_CACHELINE_BYTES / sizeof(float));
   param.dst_trans_len = 2 * param.blk_matmul_out_len;
-  param.workspace_len =
-      MAX(param.blk_tile_in_len + param.blk_matmul_in_len, param.dst_trans_len);
+  param.workspace_len = param.src_workspace_len + param.dst_trans_len;
 
-  param.temp_buffer_size =
-      param.src_permute_len * sizeof(float) +
-      param.dst_permute_len * sizeof(float) +
-      param.cvt_flt_len * sizeof(float);
+  param.temp_buffer_size = param.src_permute_len * sizeof(float) +
+                           param.dst_permute_len * sizeof(float) +
+                           param.cvt_flt_len * sizeof(float);
 
   param.work_buffer_size = param.src_trans_len * sizeof(float) +
-      param.gemm_out_len * sizeof(float) + param.workspace_len * sizeof(float);
+                           param.gemm_out_len * sizeof(float) +
+                           param.workspace_len * sizeof(float);
 
   return param;
 }
@@ -171,7 +183,7 @@ void winconv_4x3_avx512(WinogradOptParams param, float *__restrict__ image,
                         const int irows, const int icols, const int C,
                         float *__restrict__ filter, const int K,
                         const int batch, float *__restrict__ out,
-                        float *__restrict__ tmpbuf, float *__restrict__ workbuf) {
+                        float *__restrict__ tmpbuf) {
   const int64_t src_h = irows;
   const int64_t src_w = icols;
   const int64_t dst_h = src_h - 2;
@@ -204,13 +216,10 @@ void winconv_4x3_avx512(WinogradOptParams param, float *__restrict__ image,
     const int64_t tile_body_compute = ROUND(l2_tiles_compute, TILE_KERNEL_BLK);
     const int64_t tile_tail_compute = l2_tiles_compute - tile_body_compute;
 
-    WINO_DEBUG("tile_l2 = %ld, l2_tiles_compute = %ld, body_compute = %ld, tail_compute = %ld\n", tile_l2, l2_tiles_compute, tile_body_compute, tile_tail_compute);
-
-    // float *src_trans = (float *)workbuf;
-    float *src_trans = (float *)aligned_alloc(64, param.work_buffer_size * sizeof(float));
+    float *src_trans = dst + param.dst_permute_len + param.cvt_flt_len;
     float *gemm_out_buf = src_trans + param.src_trans_len;
-    float *base_work_space = gemm_out_buf + param.gemm_out_len;
-    WINO_DEBUG("base_work_space = %x\n", base_work_space);
+    float *src_work_space = gemm_out_buf + param.gemm_out_len;
+    float *dst_work_space = src_work_space + param.src_workspace_len;
 
     for (int64_t ic_l2 = 0; ic_l2 < C; ic_l2 += param.ic_l2_blk) {
       const int64_t l2_ic_compute = MIN(param.ic_l2_blk, C - ic_l2);
@@ -229,7 +238,7 @@ void winconv_4x3_avx512(WinogradOptParams param, float *__restrict__ image,
 
         for (int64_t tile_blk = tile_l2; tile_blk < tile_l2 + l2_tiles_compute;
              ++tile_blk) {
-          float *tile_in_buf = base_work_space;
+          float *tile_in_buf = src_work_space;
           float *matmul_in_buf = tile_in_buf + param.blk_tile_in_len;
           WINO_DEBUG("tile_in_buf = %x\n", tile_in_buf);
 
@@ -250,8 +259,12 @@ void winconv_4x3_avx512(WinogradOptParams param, float *__restrict__ image,
               (ic_blk - ic_l2) * blk_tile_compute + t * KERNEL_ONE_REG;
           const float *base_src =
               src + b * src_batch_stride + ic_blk * src_h * src_w;
-          WINO_DEBUG("Start src trans tile_blk = %ld, aka. b = %ld, t = %d, blk_tile_compute = %d\n", tile_blk, b, t, blk_tile_compute);
-          WINO_DEBUG("Store blk_src_trans offset = %d * l2_ic_compute_padded + %d * (ic_blk - ic_l2) + %d * 16\n", (tile_blk - tile_l2 - t), blk_tile_compute, t);
+          WINO_DEBUG("Start src trans tile_blk = %ld, aka. b = %ld, t = %d, "
+                     "blk_tile_compute = %d\n",
+                     tile_blk, b, t, blk_tile_compute);
+          WINO_DEBUG("Store blk_src_trans offset = %d * l2_ic_compute_padded + "
+                     "%d * (ic_blk - ic_l2) + %d * 16\n",
+                     (tile_blk - tile_l2 - t), blk_tile_compute, t);
 
           winograd_b4f3_srctrans_fp32_avx512(
               base_src, ih, iw, src_h, src_w,
@@ -297,10 +310,8 @@ void winconv_4x3_avx512(WinogradOptParams param, float *__restrict__ image,
                   TILE_KERNEL_BLK * l2_ic_compute_padded;
               winograd_b4f3_gemm_kernel_fp32_avx512(
                   kernel_oc_len, TILE_KERNEL_BLK, kernel_param);
-              kernel_param.src +=
-                  tile_body_compute * l2_ic_compute_padded;
-              kernel_param.dst +=
-                  tile_body_compute * KERNEL_ONE_REG;
+              kernel_param.src += tile_body_compute * l2_ic_compute_padded;
+              kernel_param.dst += tile_body_compute * KERNEL_ONE_REG;
             }
             if (tile_tail_compute) {
               // WINO_DEBUG("tl2 = %d, tail compute\n", tile_l2);
@@ -319,7 +330,7 @@ void winconv_4x3_avx512(WinogradOptParams param, float *__restrict__ image,
                oc_blk += KERNEL_ONE_REG) {
             for (int64_t tile_blk = tile_l2;
                  tile_blk < tile_l2 + l2_tiles_compute; ++tile_blk) {
-              float *dst_trans_buf = base_work_space;
+              float *dst_trans_buf = dst_work_space;
 
               TileIndex tIndex = calculateTileIndex(param, tile_blk);
               const int64_t b = tIndex.b;
@@ -360,8 +371,6 @@ void winconv_4x3_avx512(WinogradOptParams param, float *__restrict__ image,
         }
       }
     }
-
-    free(src_trans);
   }
 
   // dst permute back

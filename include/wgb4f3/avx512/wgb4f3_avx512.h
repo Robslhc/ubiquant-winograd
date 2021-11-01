@@ -17,6 +17,6 @@ void winconv_4x3_avx512(WinogradOptParams param, float *__restrict__ image,
                         const int irows, const int icols, const int C,
                         float *__restrict__ filter, const int K,
                         const int batch, float *__restrict__ out,
-                        float *__restrict__ tmpbuf, float *__restrict__ workbuf);
+                        float *__restrict__ tmpbuf);
 
 #endif
