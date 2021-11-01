@@ -17,8 +17,8 @@ elif [ $1 == "testrelease" ]; then
     make -j 4
     cd ..
 
-    build/winograd small.conf 1
-    build/winograd realworld.conf 1
+    build/winograd small.conf 0
+    build/winograd realworld.conf 0
 elif [ $1 == "build" ]; then
     if [ ! -d "build" ]; then
         mkdir build; cd build;
@@ -48,6 +48,7 @@ elif [ $1 == "validation" ]; then
         cd ..
     fi
     build/winograd small.conf 1
+    build/winograd smallrealworld.conf 1
 elif [ $1 == "benchmark" ]; then
     if [ ! -d "build" ]; then
         mkdir build; cd build;

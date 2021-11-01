@@ -12,13 +12,13 @@ inline void memset32_avx(void *dst, const float val, const int64_t n32) {
   if (__n32 >= 8) {
     __m256 ymm_val = _mm256_set1_ps(val);
     while (__n32 >= 16) {
-      _mm256_store_ps(__dst + 0, ymm_val);
-      _mm256_store_ps(__dst + 8, ymm_val);
+      _mm256_storeu_ps(__dst + 0, ymm_val);
+      _mm256_storeu_ps(__dst + 8, ymm_val);
       __dst += 16;
       __n32 -= 16;
     }
     if (__n32 & 8) {
-      _mm256_store_ps(__dst + 0, ymm_val);
+      _mm256_storeu_ps(__dst + 0, ymm_val);
       __dst += 8;
       __n32 -= 8;
     }
@@ -46,19 +46,19 @@ inline void memcpy32_avx(void *dst, const void *src, const int64_t n32) {
   const float *__src = (const float *)src;
   WINO_DEBUG("__dst = %x\n", __dst);
   while (__n32 >= 16) {
-    _mm256_store_ps(__dst + 0, _mm256_load_ps(__src + 0));
-    _mm256_store_ps(__dst + 8, _mm256_load_ps(__src + 8));
+    _mm256_storeu_ps(__dst + 0, _mm256_loadu_ps(__src + 0));
+    _mm256_storeu_ps(__dst + 8, _mm256_loadu_ps(__src + 8));
     __dst += 16;
     __src += 16;
     __n32 -= 16;
   }
   if (__n32 & 8) {
-    _mm256_store_ps(__dst + 0, _mm256_load_ps(__src + 0));
+    _mm256_storeu_ps(__dst + 0, _mm256_loadu_ps(__src + 0));
     __dst += 8;
     __src += 8;
   }
   if (__n32 & 4) {
-    _mm_store_ps(__dst + 0, _mm_load_ps(__src + 0));
+    _mm_storeu_ps(__dst + 0, _mm_loadu_ps(__src + 0));
     __dst += 4;
     __src += 4;
   }

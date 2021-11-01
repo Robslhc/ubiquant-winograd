@@ -56,45 +56,45 @@ void winograd_b4f3_srctrans_fp32_avx512(
     __m512 zmm0, zmm2, zmm4, zmm6;
     __m512 zmm8, zmm10, zmm15;
 
-    zmm0 = _mm512_load_ps(tile_ptr + 0 * KERNEL_ONE_REG) * zmm13;
+    zmm0 = _mm512_loadu_ps(tile_ptr + 0 * KERNEL_ONE_REG) * zmm13;
 
-    zmm15 = _mm512_load_ps(tile_ptr + 1 * KERNEL_ONE_REG);
+    zmm15 = _mm512_loadu_ps(tile_ptr + 1 * KERNEL_ONE_REG);
     zmm4 = zmm15 * zmm13;
     zmm2 = -zmm4;
     zmm8 = zmm15 * zmm12;
     zmm6 = -zmm8;
     zmm10 = zmm4;
 
-    zmm15 = _mm512_load_ps(tile_ptr + 2 * KERNEL_ONE_REG);
+    zmm15 = _mm512_loadu_ps(tile_ptr + 2 * KERNEL_ONE_REG);
     zmm0 -= zmm15 * zmm14;
     zmm2 -= zmm15 * zmm13;
     zmm4 -= zmm15 * zmm13;
     zmm6 -= zmm15;
     zmm8 -= zmm15;
 
-    zmm15 = _mm512_load_ps(tile_ptr + 3 * KERNEL_ONE_REG);
+    zmm15 = _mm512_loadu_ps(tile_ptr + 3 * KERNEL_ONE_REG);
     zmm2 += zmm15;
     zmm4 -= zmm15;
     zmm6 += zmm15 * zmm12;
     zmm8 -= zmm15 * zmm12;
     zmm10 -= zmm15 * zmm14;
 
-    zmm15 = _mm512_load_ps(tile_ptr + 4 * KERNEL_ONE_REG);
+    zmm15 = _mm512_loadu_ps(tile_ptr + 4 * KERNEL_ONE_REG);
     zmm0 += zmm15;
     zmm2 += zmm15;
     zmm4 += zmm15;
     zmm6 += zmm15;
     zmm8 += zmm15;
 
-    zmm15 = _mm512_load_ps(tile_ptr + 5 * KERNEL_ONE_REG);
+    zmm15 = _mm512_loadu_ps(tile_ptr + 5 * KERNEL_ONE_REG);
     zmm10 += zmm15;
 
-    _mm512_store_ps(tmp_buffer + 0 * KERNEL_ONE_REG, zmm0);
-    _mm512_store_ps(tmp_buffer + 1 * KERNEL_ONE_REG, zmm2);
-    _mm512_store_ps(tmp_buffer + 2 * KERNEL_ONE_REG, zmm4);
-    _mm512_store_ps(tmp_buffer + 3 * KERNEL_ONE_REG, zmm6);
-    _mm512_store_ps(tmp_buffer + 4 * KERNEL_ONE_REG, zmm8);
-    _mm512_store_ps(tmp_buffer + 5 * KERNEL_ONE_REG, zmm10);
+    _mm512_storeu_ps(tmp_buffer + 0 * KERNEL_ONE_REG, zmm0);
+    _mm512_storeu_ps(tmp_buffer + 1 * KERNEL_ONE_REG, zmm2);
+    _mm512_storeu_ps(tmp_buffer + 2 * KERNEL_ONE_REG, zmm4);
+    _mm512_storeu_ps(tmp_buffer + 3 * KERNEL_ONE_REG, zmm6);
+    _mm512_storeu_ps(tmp_buffer + 4 * KERNEL_ONE_REG, zmm8);
+    _mm512_storeu_ps(tmp_buffer + 5 * KERNEL_ONE_REG, zmm10);
   }
 
   for (int64_t tw = 0; tw < TILE_IN_W; ++tw) {
@@ -104,45 +104,45 @@ void winograd_b4f3_srctrans_fp32_avx512(
     __m512 zmm0, zmm2, zmm4, zmm6;
     __m512 zmm8, zmm10, zmm15;
 
-    zmm0 = _mm512_load_ps(tmp_buffer + 0 * tile_h_stride) * zmm13;
+    zmm0 = _mm512_loadu_ps(tmp_buffer + 0 * tile_h_stride) * zmm13;
 
-    zmm15 = _mm512_load_ps(tmp_buffer + 1 * tile_h_stride);
+    zmm15 = _mm512_loadu_ps(tmp_buffer + 1 * tile_h_stride);
     zmm4 = zmm15 * zmm13;
     zmm2 = -zmm4;
     zmm8 = zmm15 * zmm12;
     zmm6 = -zmm8;
     zmm10 = zmm4;
 
-    zmm15 = _mm512_load_ps(tmp_buffer + 2 * tile_h_stride);
+    zmm15 = _mm512_loadu_ps(tmp_buffer + 2 * tile_h_stride);
     zmm0 -= zmm15 * zmm14;
     zmm2 -= zmm15 * zmm13;
     zmm4 -= zmm15 * zmm13;
     zmm6 -= zmm15;
     zmm8 -= zmm15;
 
-    zmm15 = _mm512_load_ps(tmp_buffer + 3 * tile_h_stride);
+    zmm15 = _mm512_loadu_ps(tmp_buffer + 3 * tile_h_stride);
     zmm2 += zmm15;
     zmm4 -= zmm15;
     zmm6 += zmm15 * zmm12;
     zmm8 -= zmm15 * zmm12;
     zmm10 -= zmm15 * zmm14;
 
-    zmm15 = _mm512_load_ps(tmp_buffer + 4 * tile_h_stride);
+    zmm15 = _mm512_loadu_ps(tmp_buffer + 4 * tile_h_stride);
     zmm0 += zmm15;
     zmm2 += zmm15;
     zmm4 += zmm15;
     zmm6 += zmm15;
     zmm8 += zmm15;
 
-    zmm15 = _mm512_load_ps(tmp_buffer + 5 * tile_h_stride);
+    zmm15 = _mm512_loadu_ps(tmp_buffer + 5 * tile_h_stride);
     zmm10 += zmm15;
 
-    _mm512_store_ps(dst + 0 * TILE_IN_W * l2_stride, zmm0);
-    _mm512_store_ps(dst + 1 * TILE_IN_W * l2_stride, zmm2);
-    _mm512_store_ps(dst + 2 * TILE_IN_W * l2_stride, zmm4);
-    _mm512_store_ps(dst + 3 * TILE_IN_W * l2_stride, zmm6);
-    _mm512_store_ps(dst + 4 * TILE_IN_W * l2_stride, zmm8);
-    _mm512_store_ps(dst + 5 * TILE_IN_W * l2_stride, zmm10);
+    _mm512_storeu_ps(dst + 0 * TILE_IN_W * l2_stride, zmm0);
+    _mm512_storeu_ps(dst + 1 * TILE_IN_W * l2_stride, zmm2);
+    _mm512_storeu_ps(dst + 2 * TILE_IN_W * l2_stride, zmm4);
+    _mm512_storeu_ps(dst + 3 * TILE_IN_W * l2_stride, zmm6);
+    _mm512_storeu_ps(dst + 4 * TILE_IN_W * l2_stride, zmm8);
+    _mm512_storeu_ps(dst + 5 * TILE_IN_W * l2_stride, zmm10);
   }
 }
 
@@ -180,38 +180,38 @@ void winograd_b4f3_dsttrans_fp32_avx512(const float *dst_trans,
     __m512 zmm0, zmm2, zmm4, zmm6;
     __m512 zmm8, zmm10;
 
-    zmm8 = _mm512_load_ps(dst_trans_ptr + 0 * dst_trans_ti_stride);
-    zmm10 = _mm512_load_ps(dst_trans_ptr + 1 * dst_trans_ti_stride);
+    zmm8 = _mm512_loadu_ps(dst_trans_ptr + 0 * dst_trans_ti_stride);
+    zmm10 = _mm512_loadu_ps(dst_trans_ptr + 1 * dst_trans_ti_stride);
     zmm0 = zmm8 + zmm10;
     zmm2 = zmm10;
     zmm4 = zmm10;
     zmm6 = zmm10;
 
-    zmm8 = _mm512_load_ps(dst_trans_ptr + 2 * dst_trans_ti_stride);
+    zmm8 = _mm512_loadu_ps(dst_trans_ptr + 2 * dst_trans_ti_stride);
     zmm0 += zmm8;
     zmm2 -= zmm8;
     zmm4 += zmm8;
     zmm6 -= zmm8;
 
-    zmm8 = _mm512_load_ps(dst_trans_ptr + 3 * dst_trans_ti_stride);
+    zmm8 = _mm512_loadu_ps(dst_trans_ptr + 3 * dst_trans_ti_stride);
     zmm0 += zmm8;
     zmm2 += zmm8 * zmm13;
     zmm4 += zmm8 * zmm14;
     zmm6 += zmm8 * zmm15;
 
-    zmm8 = _mm512_load_ps(dst_trans_ptr + 4 * dst_trans_ti_stride);
+    zmm8 = _mm512_loadu_ps(dst_trans_ptr + 4 * dst_trans_ti_stride);
     zmm0 += zmm8;
     zmm2 -= zmm8 * zmm13;
     zmm4 += zmm8 * zmm14;
     zmm6 -= zmm8 * zmm15;
 
-    zmm8 = _mm512_load_ps(dst_trans_ptr + 5 * dst_trans_ti_stride);
+    zmm8 = _mm512_loadu_ps(dst_trans_ptr + 5 * dst_trans_ti_stride);
     zmm6 += zmm8;
 
-    _mm512_store_ps(tmp + 0 * KERNEL_ONE_REG, zmm0);
-    _mm512_store_ps(tmp + 1 * KERNEL_ONE_REG, zmm2);
-    _mm512_store_ps(tmp + 2 * KERNEL_ONE_REG, zmm4);
-    _mm512_store_ps(tmp + 3 * KERNEL_ONE_REG, zmm6);
+    _mm512_storeu_ps(tmp + 0 * KERNEL_ONE_REG, zmm0);
+    _mm512_storeu_ps(tmp + 1 * KERNEL_ONE_REG, zmm2);
+    _mm512_storeu_ps(tmp + 2 * KERNEL_ONE_REG, zmm4);
+    _mm512_storeu_ps(tmp + 3 * KERNEL_ONE_REG, zmm6);
   }
 
   for (int64_t tw = 0; tw < TILE_OUT_W; ++tw) {
@@ -221,38 +221,38 @@ void winograd_b4f3_dsttrans_fp32_avx512(const float *dst_trans,
     __m512 zmm0, zmm2, zmm4, zmm6;
     __m512 zmm8, zmm10;
 
-    zmm8 = _mm512_load_ps(tmp + 0 * matmul_h_stride);
-    zmm10 = _mm512_load_ps(tmp + 1 * matmul_h_stride);
+    zmm8 = _mm512_loadu_ps(tmp + 0 * matmul_h_stride);
+    zmm10 = _mm512_loadu_ps(tmp + 1 * matmul_h_stride);
     zmm0 = zmm8 + zmm10;
     zmm2 = zmm10;
     zmm4 = zmm10;
     zmm6 = zmm10;
 
-    zmm8 = _mm512_load_ps(tmp + 2 * matmul_h_stride);
+    zmm8 = _mm512_loadu_ps(tmp + 2 * matmul_h_stride);
     zmm0 += zmm8;
     zmm2 -= zmm8;
     zmm4 += zmm8;
     zmm6 -= zmm8;
 
-    zmm8 = _mm512_load_ps(tmp + 3 * matmul_h_stride);
+    zmm8 = _mm512_loadu_ps(tmp + 3 * matmul_h_stride);
     zmm0 += zmm8;
     zmm2 += zmm8 * zmm13;
     zmm4 += zmm8 * zmm14;
     zmm6 += zmm8 * zmm15;
 
-    zmm8 = _mm512_load_ps(tmp + 4 * matmul_h_stride);
+    zmm8 = _mm512_loadu_ps(tmp + 4 * matmul_h_stride);
     zmm0 += zmm8;
     zmm2 -= zmm8 * zmm13;
     zmm4 += zmm8 * zmm14;
     zmm6 -= zmm8 * zmm15;
 
-    zmm8 = _mm512_load_ps(tmp + 5 * matmul_h_stride);
+    zmm8 = _mm512_loadu_ps(tmp + 5 * matmul_h_stride);
     zmm6 += zmm8;
 
-    _mm512_store_ps(dst_ptr + 0 * dst_h_stride, zmm0);
-    _mm512_store_ps(dst_ptr + 1 * dst_h_stride, zmm2);
-    _mm512_store_ps(dst_ptr + 2 * dst_h_stride, zmm4);
-    _mm512_store_ps(dst_ptr + 3 * dst_h_stride, zmm6);
+    _mm512_storeu_ps(dst_ptr + 0 * dst_h_stride, zmm0);
+    _mm512_storeu_ps(dst_ptr + 1 * dst_h_stride, zmm2);
+    _mm512_storeu_ps(dst_ptr + 2 * dst_h_stride, zmm4);
+    _mm512_storeu_ps(dst_ptr + 3 * dst_h_stride, zmm6);
   }
 }
 
@@ -265,8 +265,8 @@ void winograd_b4f3_store_dst_fp32_avx512(const float *dst_trans,
     const float *dst_trans_ptr = dst_trans + oh * TILE_OUT_W * KERNEL_ONE_REG;
     float *dst_ptr = dst + oh * dst_h_stride;
     for (int64_t ow = 0; ow < ow_len; ++ow) {
-      __m512 vres = _mm512_load_ps(dst_trans_ptr);
-      _mm512_store_ps(dst_ptr, vres);
+      __m512 vres = _mm512_loadu_ps(dst_trans_ptr);
+      _mm512_storeu_ps(dst_ptr, vres);
       dst_trans_ptr += KERNEL_ONE_REG;
       dst_ptr += KERNEL_ONE_REG;
     }

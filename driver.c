@@ -138,10 +138,9 @@ void winograd_conv(const int layer_idx, const int validation_mode,
 #ifdef WINO_B4
   WinogradOptParams param =
       init_winconv_4x3_params(batch, C, K, irows, icols, 0);
-  float *temp_buffer = (float *)malloc(param.temp_buffer_size);
+  float *temp_buffer = (float *)aligned_alloc(64, param.temp_buffer_size +
+                                                      param.work_buffer_size);
   assert(temp_buffer != NULL);
-  float *work_buffer = (float *)malloc(param.work_buffer_size);
-  assert(work_buffer != NULL);
 #endif
 
   // Warm up
@@ -149,7 +148,7 @@ void winograd_conv(const int layer_idx, const int validation_mode,
   winconv_2x3(image, irows, icols, C, filter, K, batch, out, U, V, M);
 #else
   winconv_4x3_avx512(param, image, irows, icols, C, filter, K, batch, out,
-                     temp_buffer, work_buffer);
+                     temp_buffer);
 #endif
   if (validation_mode) { // Verify mode. Check the result
     float *out_ref = (float *)malloc(batch * K * sizeO * sizeof(float));
@@ -178,7 +177,7 @@ void winograd_conv(const int layer_idx, const int validation_mode,
       winconv_2x3(image, irows, icols, C, filter, K, batch, out, U, V, M);
 #else
       winconv_4x3_avx512(param, image, irows, icols, C, filter, K, batch, out,
-                         temp_buffer, work_buffer);
+                         temp_buffer);
 #endif
     }
     double end_time = timestamp();
@@ -200,7 +199,6 @@ void winograd_conv(const int layer_idx, const int validation_mode,
   free(M);
 #else
   free(temp_buffer);
-  free(work_buffer);
 #endif
   free(image);
   free(filter);
