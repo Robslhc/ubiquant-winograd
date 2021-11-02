@@ -1,6 +1,8 @@
 #include "wgb4f3/avx512/wgb4f3_avx512.h"
 
+#include "omp.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "avxtools.h"
 #include "wgb4f3/avx512/wgb4f3_avx512_kernels.h"
@@ -122,10 +124,12 @@ WinogradOptParams init_winconv_4x3_params(const int N, const int C, const int K,
                            param.dst_permute_len * sizeof(float) +
                            param.cvt_flt_len * sizeof(float);
 
-  param.work_buffer_size = param.src_trans_len * sizeof(float) +
-                           param.gemm_out_len * sizeof(float) +
-                           param.workspace_len * sizeof(float);
+  const char *env_p = getenv("OMP_NUM_THREADS");
+  int num_threads = atoi(env_p);
 
+  param.work_buffer_size = param.src_trans_len * sizeof(float) * num_threads +
+                           param.gemm_out_len * sizeof(float) * num_threads +
+                           param.workspace_len * sizeof(float) * num_threads;
   return param;
 }
 
@@ -135,6 +139,7 @@ static void transposeToNCHW16(const float *__restrict__ src, const int64_t N,
   const int64_t padded_c = ROUND_UP(C, KERNEL_ONE_REG);
   const int64_t dst_batch_stride = padded_c * H * W;
 
+#pragma omp parallel for
   for (int64_t n = 0; n < N; ++n) {
     for (int64_t c_outer = 0; c_outer < C; c_outer += KERNEL_ONE_REG) {
       for (int64_t h = 0; h < H; ++h) {
@@ -164,6 +169,7 @@ static void transposeFromNCHW16(const float *__restrict__ src, const int64_t N,
   const int64_t padded_c = ROUND_UP(C, KERNEL_ONE_REG);
   const int64_t src_batch_stride = padded_c * H * W;
 
+#pragma omp parallel for
   for (int64_t n = 0; n < N; ++n) {
     for (int64_t c = 0; c < C; ++c) {
       int64_t c_outer = c / KERNEL_ONE_REG;
@@ -206,9 +212,11 @@ void winconv_4x3_avx512(WinogradOptParams param, float *__restrict__ image,
     winconv_4x3_avx512_cvt_flt(param, filter, C, K, filter_cvt);
   }
 
-  wgb4f3_kernel_params kernel_param;
+#pragma omp parallel for
   for (int64_t tile_l2 = 0; tile_l2 < param.num_tiles;
        tile_l2 += param.tiles_l2_blk) {
+
+    wgb4f3_kernel_params kernel_param;
 
     // compute all the tiles in l2 cache
     const int64_t l2_tiles_compute =
@@ -217,6 +225,9 @@ void winconv_4x3_avx512(WinogradOptParams param, float *__restrict__ image,
     const int64_t tile_tail_compute = l2_tiles_compute - tile_body_compute;
 
     float *src_trans = dst + param.dst_permute_len + param.cvt_flt_len;
+    src_trans += (param.src_trans_len + param.gemm_out_len +
+                  param.src_workspace_len + param.dst_trans_len) *
+                 omp_get_thread_num();
     float *gemm_out_buf = src_trans + param.src_trans_len;
     float *src_work_space = gemm_out_buf + param.gemm_out_len;
     float *dst_work_space = src_work_space + param.src_workspace_len;
