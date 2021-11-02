@@ -5,6 +5,7 @@ project(winograd)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_BUILD_TYPE Release)
 option(USE_WINO_B4 "use winograd algorithm with block size 4" ON)
+option(USE_OPENMP "use openmp for winograd" ON)
 option(DEBUG_MODE "debug mode" OFF)
 
 include_directories(include)
@@ -28,10 +29,12 @@ endif()
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mavx -mavx512f")
 
 # enable openmp
-find_package(OpenMP)
-if (OPENMP_FOUND)
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+if (USE_OPENMP)
+    find_package(OpenMP)
+    if (OPENMP_FOUND)
+        set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+        set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+    endif()
 endif()
 
 file(GLOB SRC_FILES "*.c"
