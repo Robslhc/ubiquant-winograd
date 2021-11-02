@@ -13,6 +13,10 @@
 #include "wgb2f3/wgb2f3.h"
 #include "wgb4f3/avx512/wgb4f3_avx512.h"
 
+#ifdef PROFILE
+#include "timer.h"
+#endif
+
 #ifdef __DEBUG
 #define inline
 #endif
@@ -143,6 +147,12 @@ void winograd_conv(const int layer_idx, const int validation_mode,
   assert(temp_buffer != NULL);
 #endif
 
+#ifdef PROFILE
+  struct wino_timer_t wino_timer;
+  wino_profile_init(&wino_timer);
+  param.timer = &wino_timer;
+#endif
+
   // Warm up
 #ifndef WINO_B4
   winconv_2x3(image, irows, icols, C, filter, K, batch, out, U, V, M);
@@ -192,6 +202,9 @@ void winograd_conv(const int layer_idx, const int validation_mode,
     *total_flops += nflops;
     printf("Layer %-2d:  Elapse time %lf ms. ( %7.2lf GFlops) \n", layer_idx,
            elapse_time * 1000, gflops);
+#ifdef PROFILE
+    wino_profile_result(&wino_timer, LOOP_NUM);
+#endif
   }
 #ifndef WINO_B4
   free(U);

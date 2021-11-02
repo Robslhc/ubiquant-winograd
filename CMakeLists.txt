@@ -7,12 +7,14 @@ set(CMAKE_BUILD_TYPE Release)
 option(USE_WINO_B4 "use winograd algorithm with block size 4" ON)
 option(USE_OPENMP "use openmp for winograd" ON)
 option(DEBUG_MODE "debug mode" OFF)
+option(PROFILE_MODE "profile mode" OFF)
 
 include_directories(include)
 include_directories(src)
 
 message(STATUS "Use winograd b4 ${USE_WINO_B4}")
 message(STATUS "Debug mode ${DEBUG_MODE}")
+message(STATUS "Profile mode ${PROFILE_MODE}")
 
 if (USE_WINO_B4)
     add_definitions(-DWINO_B4)
@@ -23,6 +25,10 @@ if (DEBUG_MODE)
     add_definitions(-D__DEBUG)
 else ()
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -mtune-ctrl=256_unaligned_load_optimal,256_unaligned_store_optimal")
+endif()
+
+if (PROFILE_MODE)
+    add_definitions(-DPROFILE)
 endif()
 
 # enable avx512
