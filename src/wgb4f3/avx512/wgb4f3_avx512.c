@@ -5,6 +5,7 @@
 
 #include "avxtools.h"
 #include "common.h"
+#include "timer.h"
 #include "wgb4f3/avx512/wgb4f3_avx512_kernels.h"
 #include "wgb4f3/wgb4f3.h"
 
@@ -200,17 +201,22 @@ void winconv_4x3_avx512(WinogradOptParams param, float *__restrict__ image,
   // src permute
   float *src = (float *)tmpbuf;
   float *dst = tmpbuf + param.src_permute_len;
+  START_TIMER(param.timer, CONVERT_TO_NCHW16_TIMER);
   transposeToNCHW16(image, batch, C, irows, icols, src);
+  END_TIMER(param.timer, CONVERT_TO_NCHW16_TIMER);
 
   // cvt filter
   float *filter_cvt;
+  START_TIMER(param.timer, CONVERT_FILTER_TIMER);
   if (param.cvt_filter_precomputed) {
     filter_cvt = filter;
   } else {
     filter_cvt = dst + param.dst_permute_len;
     winconv_4x3_avx512_cvt_flt(param, filter, C, K, filter_cvt);
   }
+  END_TIMER(param.timer, CONVERT_FILTER_TIMER);
 
+  START_TIMER(param.timer, WINO_COMPUTE_TIMER);
 #pragma omp parallel for
   for (int64_t tile_l2 = 0; tile_l2 < param.num_tiles;
        tile_l2 += param.tiles_l2_blk) {
@@ -382,9 +388,12 @@ void winconv_4x3_avx512(WinogradOptParams param, float *__restrict__ image,
       }
     }
   }
+  END_TIMER(param.timer, WINO_COMPUTE_TIMER);
 
+  START_TIMER(param.timer, CONVERT_FROM_NCHW16_TIMER);
   // dst permute back
   transposeFromNCHW16(dst, batch, K, dst_h, dst_w, out);
+  END_TIMER(param.timer, CONVERT_FROM_NCHW16_TIMER);
 }
 
 void winconv_4x3_avx512_cvt_flt(WinogradOptParams param,

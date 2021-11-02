@@ -4,6 +4,10 @@
 #include <omp.h>
 #include <stdlib.h>
 
+#ifdef PROFILE
+#include "timer.h"
+#endif
+
 typedef u_int64_t uint64_t;
 
 #define DIV_UP(A, B) (((A) + (B)-1) / (B))
@@ -75,6 +79,9 @@ typedef struct {
 
   uint64_t temp_buffer_size;
   uint64_t work_buffer_size;
+#ifdef PROFILE
+  struct wino_timer_t *timer;
+#endif
 } WinogradOptParams;
 
 typedef struct {
