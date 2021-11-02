@@ -1,6 +1,7 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
+#include <omp.h>
 #include <stdlib.h>
 
 typedef u_int64_t uint64_t;
@@ -22,6 +23,20 @@ typedef u_int64_t uint64_t;
   } while (0)
 #else
 #define WINO_DEBUG(...)
+#endif
+
+#define PRAGMA(X) _Pragma(#X)
+
+#ifdef _OPENMP
+#define OMP_NUM_THREADS omp_get_num_threads()
+#define OMP_MAX_THREADS omp_get_max_threads()
+#define OMP_THREAD_ID omp_get_thread_num()
+#define PRAGMA_OMP_PARALLEL_FOR() PRAGMA(omp parallel for)
+#else
+#define OMP_NUM_THREADS 1
+#define OMP_MAX_THREADS 1
+#define OMP_THREAD_ID 0
+#define PRAGMA_OMP_PARALLEL_FOR()
 #endif
 
 // opt params

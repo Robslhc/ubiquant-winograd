@@ -1,10 +1,10 @@
 #include "wgb4f3/avx512/wgb4f3_avx512.h"
 
-#include "omp.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "avxtools.h"
+#include "common.h"
 #include "wgb4f3/avx512/wgb4f3_avx512_kernels.h"
 #include "wgb4f3/wgb4f3.h"
 
@@ -124,8 +124,7 @@ WinogradOptParams init_winconv_4x3_params(const int N, const int C, const int K,
                            param.dst_permute_len * sizeof(float) +
                            param.cvt_flt_len * sizeof(float);
 
-  const char *env_p = getenv("OMP_NUM_THREADS");
-  int num_threads = atoi(env_p);
+  int num_threads = OMP_MAX_THREADS;
 
   param.work_buffer_size = param.src_trans_len * sizeof(float) * num_threads +
                            param.gemm_out_len * sizeof(float) * num_threads +
@@ -139,7 +138,7 @@ static void transposeToNCHW16(const float *__restrict__ src, const int64_t N,
   const int64_t padded_c = ROUND_UP(C, KERNEL_ONE_REG);
   const int64_t dst_batch_stride = padded_c * H * W;
 
-#pragma omp parallel for
+  PRAGMA_OMP_PARALLEL_FOR()
   for (int64_t n = 0; n < N; ++n) {
     for (int64_t c_outer = 0; c_outer < C; c_outer += KERNEL_ONE_REG) {
       for (int64_t h = 0; h < H; ++h) {
@@ -169,7 +168,7 @@ static void transposeFromNCHW16(const float *__restrict__ src, const int64_t N,
   const int64_t padded_c = ROUND_UP(C, KERNEL_ONE_REG);
   const int64_t src_batch_stride = padded_c * H * W;
 
-#pragma omp parallel for
+  PRAGMA_OMP_PARALLEL_FOR()
   for (int64_t n = 0; n < N; ++n) {
     for (int64_t c = 0; c < C; ++c) {
       int64_t c_outer = c / KERNEL_ONE_REG;
@@ -227,7 +226,7 @@ void winconv_4x3_avx512(WinogradOptParams param, float *__restrict__ image,
     float *src_trans = dst + param.dst_permute_len + param.cvt_flt_len;
     src_trans += (param.src_trans_len + param.gemm_out_len +
                   param.src_workspace_len + param.dst_trans_len) *
-                 omp_get_thread_num();
+                 OMP_THREAD_ID;
     float *gemm_out_buf = src_trans + param.src_trans_len;
     float *src_work_space = gemm_out_buf + param.gemm_out_len;
     float *dst_work_space = src_work_space + param.src_workspace_len;
