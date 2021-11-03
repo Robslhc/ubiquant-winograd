@@ -641,6 +641,7 @@ void winconv_4x3_avx512_cvt_flt(WinogradOptParams param,
   };
 
   // convert to [IC_L2_BLK, th, tw, O/16, ic_l2, 16]
+  PRAGMA_OMP_PARALLEL_FOR()
   for (int64_t ic_l2 = 0; ic_l2 < param.padded_ic; ic_l2 += param.ic_l2_blk) {
     for (int64_t oc_blk = 0; oc_blk < param.padded_oc;
          oc_blk += KERNEL_ONE_REG) {
