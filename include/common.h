@@ -36,12 +36,22 @@ typedef u_int64_t uint64_t;
 #define OMP_MAX_THREADS omp_get_max_threads()
 #define OMP_THREAD_ID omp_get_thread_num()
 #define PRAGMA_OMP_PARALLEL_FOR() PRAGMA(omp parallel for)
+#define PRAGMA_OMP_PARALLEL_FOR_COLLAPSE(N) PRAGMA(omp parallel for collapse(N))
+#define PRAGMA_OMP_PARALLEL() PRAGMA(omp parallel)
+#define PRAGMA_OMP_FOR() PRAGMA(omp for)
+#define PRAGMA_OMP_FOR_COLLAPSE(N) PRAGMA(omp for collapse(N))
 #else
 #define OMP_NUM_THREADS 1
 #define OMP_MAX_THREADS 1
 #define OMP_THREAD_ID 0
 #define PRAGMA_OMP_PARALLEL_FOR()
+#define PRAGMA_OMP_PARALLEL_FOR_COLLAPSE(N)
+#define PRAGMA_OMP_PARALLEL()
+#define PRAGMA_OMP_FOR()
+#define PRAGMA_OMP_FOR_COLLAPSE(N)
 #endif
+
+typedef enum { PARALLEL_OUTER = 0, PARALLEL_INNER = 1 } parallel_mode_t;
 
 // opt params
 typedef struct {
@@ -82,6 +92,9 @@ typedef struct {
 #ifdef PROFILE
   struct wino_timer_t *timer;
 #endif
+
+  // parallel mode
+  parallel_mode_t parallel_mode;
 } WinogradOptParams;
 
 typedef struct {

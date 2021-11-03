@@ -40,24 +40,25 @@ elif [ $1 == "rebuild" ]; then
     make -j 4
     cd ..
 elif [ $1 == "validation" ]; then
-    if [ ! -d "build" ]; then
-        mkdir build; cd build;
-        shift
-        cmake $* ..
-        make -j 4
-        cd ..
+    if [ -d "build" ]; then
+        rm -rf build
     fi
+    mkdir build; cd build;
+    shift
+    cmake $* ..
+    make -j 4
+    cd ..
     build/winograd small.conf 1
     build/winograd smallrealworld.conf 1
 elif [ $1 == "benchmark" ]; then
-    if [ ! -d "build" ]; then
-        mkdir build; cd build;
-        shift
-        cmake $* ..
-        make -j 4
-        cd ..
+    if [ -d "build" ]; then
+        rm -rf build
     fi
-    build/winograd small.conf 0
+    mkdir build; cd build;
+    shift
+    cmake $* ..
+    make -j 4
+    cd ..
     build/winograd realworld.conf 0
 elif [ $1 == "clean" ]; then
     if [ -d "build" ]; then
