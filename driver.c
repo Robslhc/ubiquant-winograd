@@ -20,7 +20,7 @@
 #ifdef __DEBUG
 #define inline
 #endif
-#define LOOP_NUM 100
+#define LOOP_NUM 3
 
 inline double timestamp() {
   struct timeval tv;
@@ -66,7 +66,7 @@ void winograd_init(const int layer_num, const int Batch[], const int C[],
 
 int naive_conv(float *in, float *kn, float *out, const int N, const int C,
                const int H, const int W, const int K) {
-  int inpos, knpos, outpos;
+  long inpos, knpos, outpos;
 
   int dimIn[4] = {N, C, H, W};
   int dimKn[4] = {K, C, 3, 3};
@@ -80,15 +80,15 @@ int naive_conv(float *in, float *kn, float *out, const int N, const int C,
                    dimOut[3]};
 
 #pragma omp parallel for private(inpos, knpos, outpos)
-  for (int inn = 0; inn < dimIn[0]; inn++)
-    for (int knn = 0; knn < dimKn[0]; knn++)
-      for (int inc = 0; inc < dimIn[1]; inc++) {
-        for (int outh = 0; outh < dimOut[2]; outh++)
-          for (int outw = 0; outw < dimOut[3]; outw++) {
+  for (long inn = 0; inn < dimIn[0]; inn++)
+    for (long knn = 0; knn < dimKn[0]; knn++)
+      for (long inc = 0; inc < dimIn[1]; inc++) {
+        for (long outh = 0; outh < dimOut[2]; outh++)
+          for (long outw = 0; outw < dimOut[3]; outw++) {
             outpos =
                 inn * outgap[0] + knn * outgap[1] + outh * outgap[2] + outw;
-            for (int knh = 0; knh < dimKn[2]; knh++)
-              for (int knw = 0; knw < dimKn[3]; knw++) {
+            for (long knh = 0; knh < dimKn[2]; knh++)
+              for (long knw = 0; knw < dimKn[3]; knw++) {
                 inpos = inn * ingap[0] + inc * ingap[1] +
                         (outh + knh) * ingap[2] + (outw + knw);
                 // knpos = knn*kngap[0] + inc*kngap[1] + 8 - (knh*kngap[2] +
@@ -116,11 +116,11 @@ void winograd_conv(const int layer_idx, const int validation_mode,
   int ret;
 
   float *image, *filter, *out;
-  image = (float *)malloc(batch * C * sizeI * sizeof(float));
+  image = (float *)aligned_alloc(64, sizeof(float) * batch * C * sizeI);
   assert(image != NULL);
-  filter = (float *)malloc(K * C * sizeF * sizeof(float));
+  filter = (float *)aligned_alloc(64, sizeof(float) * K * C * sizeF);
   assert(filter != NULL);
-  out = (float *)malloc(batch * K * sizeO * sizeof(float));
+  out = (float *)aligned_alloc(64, sizeof(float) * batch * K * sizeO);
   assert(out != NULL);
 #ifndef WINO_B4
   float *U, *V, *M;
@@ -130,7 +130,7 @@ void winograd_conv(const int layer_idx, const int validation_mode,
 #endif
 
 #pragma omp parallel for private(i)
-  for (long i = 0; i < batch * C * sizeI; i++)
+  for (long i = 0; i < (size_t)batch * C * sizeI; i++)
     image[i] = (float)(i % 10 + 1);
     // image[i] = rand()%10;
 #pragma omp parallel for private(i)
@@ -140,8 +140,7 @@ void winograd_conv(const int layer_idx, const int validation_mode,
 
     // winconv 4x3 init params
 #ifdef WINO_B4
-  WinogradOptParams param =
-      init_winconv_4x3_params(batch, C, K, irows, icols, 0);
+  WinogradOptParams param = init_winconv_4x3_params(batch, C, K, irows, icols);
   float *temp_buffer = (float *)aligned_alloc(64, param.temp_buffer_size +
                                                       param.work_buffer_size);
   assert(temp_buffer != NULL);
@@ -161,15 +160,15 @@ void winograd_conv(const int layer_idx, const int validation_mode,
                      temp_buffer);
 #endif
   if (validation_mode) { // Verify mode. Check the result
-    float *out_ref = (float *)malloc(batch * K * sizeO * sizeof(float));
-    memset(out_ref, 0, batch * K * sizeO * sizeof(float));
+    float *out_ref = (float *)malloc(sizeof(float) * batch * K * sizeO);
+    memset(out_ref, 0, sizeof(float) * batch * K * sizeO);
 
     naive_conv(image, filter, out_ref, batch, C, irows, icols, K);
     printf("Layer %-2d: (Channel Height Weight Filter Batch) = "
            "(%-3d %-3d %-3d %-3d %-3d) : ",
            layer_idx, C, irows, icols, K, batch);
     long n;
-    for (n = 0; n < batch * sizeO * K; n++)
+    for (n = 0; n < (long)batch * sizeO * K; n++)
       if (fabs((out[n] - out_ref[n]) / out_ref[n]) > 1e-4) {
         printf(
             "Validation Failed ! winogradConv[%d] = %f || directConv[%d] = %f "
@@ -177,7 +176,7 @@ void winograd_conv(const int layer_idx, const int validation_mode,
             n, out[n], n, out_ref[n]);
         break;
       }
-    if (n == batch * sizeO * K)
+    if (n == (long)batch * sizeO * K)
       printf("Validation Passed !\n");
     free(out_ref);
   } else { // Benchmark mode

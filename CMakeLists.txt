@@ -3,27 +3,43 @@ cmake_minimum_required(VERSION 3.2)
 project(winograd)
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_BUILD_TYPE Release)
 option(USE_WINO_B4 "use winograd algorithm with block size 4" ON)
-option(ENABLE_PARALLEL_OUTER "enable parallel outer optimize" ON)
 option(USE_OPENMP "use openmp for winograd" ON)
+option(USE_INLINE_ASM "use inline asm for kernels" OFF)
 option(DEBUG_MODE "debug mode" OFF)
 option(PROFILE_MODE "profile mode" OFF)
+option(PARALLEL_MODE_OUTER "enable parallel outer optimize" OFF)
+option(PARALLEL_MODE_INNER "enable parallel outer optimize" OFF)
+option(AUTO_SELECT_TILE_BLK "auto select tile blk for parallel outer mode" OFF)
 
 include_directories(include)
 include_directories(src)
 
 message(STATUS "Use winograd b4 ${USE_WINO_B4}")
-message(STATUS "Enable parallel outer ${ENABLE_PARALLEL_OUTER}")
 message(STATUS "Debug mode ${DEBUG_MODE}")
 message(STATUS "Profile mode ${PROFILE_MODE}")
+message(STATUS "Enable parallel outer ${PARALLEL_MODE_OUTER}")
+message(STATUS "Enable parallel inner ${PARALLEL_MODE_INNER}")
+message(STATUS "Autoselect tile blk ${AUTO_SELECT_TILE_BLK}")
 
 if (USE_WINO_B4)
     add_definitions(-DWINO_B4)
 endif()
 
-if(ENABLE_PARALLEL_OUTER)
-    add_definitions(-DENABLE_PARALLEL_OUTER)
+if(PARALLEL_MODE_OUTER)
+    add_definitions(-DFORCE_PARALLEL_OUTER)
+    if(AUTO_SELECT_TILE_BLK)
+        add_definitions(-DAUTO_SELECT_TILE_BLK)
+    endif()
+endif()
+
+if(PARALLEL_MODE_INNER)
+    add_definitions(-DFORCE_PARALLEL_INNER)
+endif()
+
+if(USE_INLINE_ASM)
+    add_definitions(-DUSE_INLINE_ASM)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-implicit-function-declaration")
 endif()
 
 if (DEBUG_MODE)
@@ -38,7 +54,7 @@ if (PROFILE_MODE)
 endif()
 
 # enable avx512
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mavx -mavx512f")
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-discarded-qualifiers -mavx -mavx512f")
 
 # enable openmp
 if (USE_OPENMP)

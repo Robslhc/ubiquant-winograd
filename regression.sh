@@ -5,20 +5,7 @@ set -e
 TOP_DIR=$(dirname $(realpath $0))
 
 if [ $# -lt 1 ]; then
-    echo "[Usage]: regression.sh testrelease/build/rebuild/validation/benchmark/clean [options]"
-elif [ $1 == "testrelease" ]; then
-    if [ -d "build" ]; then
-        rm -rf build
-    fi
-    python clang-format-tools.py
-    mkdir build; cd build;
-    shift
-    cmake $* ..
-    make -j 4
-    cd ..
-
-    build/winograd small.conf 0
-    build/winograd realworld.conf 0
+    echo "[Usage]: regression.sh build/rebuild/validation/benchmark/clean [options]"
 elif [ $1 == "build" ]; then
     if [ ! -d "build" ]; then
         mkdir build; cd build;

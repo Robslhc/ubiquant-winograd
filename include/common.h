@@ -55,9 +55,6 @@ typedef enum { PARALLEL_OUTER = 0, PARALLEL_INNER = 1 } parallel_mode_t;
 
 // opt params
 typedef struct {
-  // cvt filter
-  int cvt_filter_precomputed;
-
   // padding
   int64_t padded_ic;
   int64_t padded_oc;
@@ -74,8 +71,6 @@ typedef struct {
   int64_t tiles_l2_blk;
 
   // array length
-  int64_t src_permute_len;
-  int64_t dst_permute_len;
   int64_t cvt_flt_len;
   int override_gemm;
   int64_t blk_tile_in_len;
@@ -84,6 +79,7 @@ typedef struct {
   int64_t src_trans_len;
   int64_t gemm_out_len;
   int64_t blk_matmul_out_len;
+  int64_t blk_dst_permute_len;
   int64_t dst_trans_len;
   int64_t workspace_len;
 

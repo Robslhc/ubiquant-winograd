@@ -6,8 +6,7 @@
 // API. The implementation is in src/wgb4f3/avx512/wgb4f3_avx512.c
 // helper functions
 WinogradOptParams init_winconv_4x3_params(const int N, const int C, const int K,
-                                          const int H, const int W,
-                                          int precompute);
+                                          const int H, const int W);
 
 void winconv_4x3_avx512_cvt_flt(WinogradOptParams param,
                                 const float *__restrict__ filter, const int C,

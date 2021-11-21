@@ -4,46 +4,18 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "avxtools.h"
 #include "common.h"
 #include "wgb4f3/wgb4f3.h"
 
-void winograd_b4f3_srctrans_fp32_avx512(
-    const float *base_src, const int64_t ih, const int64_t iw,
-    const int64_t src_h, const int64_t src_w, const int64_t l2_stride,
-    float *tile_buffer, float *matmul_buffer, float *src_trans) {
+void winograd_b4f3_srctrans_fp32_avx512(float *tile_buffer, const int64_t ih,
+                                        const int64_t iw, const int64_t src_h,
+                                        const int64_t src_w,
+                                        const int64_t l2_stride,
+                                        float *matmul_buffer,
+                                        float *src_trans) {
   const int64_t tile_h_stride = TILE_IN_W * KERNEL_ONE_REG;
-  const float *tile_src;
-  int64_t tile_src_h_stride;
-  if (ih + TILE_IN_H <= src_h && iw + TILE_IN_W <= src_w) {
-    tile_src = base_src + ih * src_w * KERNEL_ONE_REG + iw * KERNEL_ONE_REG;
-    tile_src_h_stride = src_w * KERNEL_ONE_REG;
-  } else {
-    tile_src = tile_buffer;
-    tile_src_h_stride = tile_h_stride;
-    float *tile_buffer_ptr = tile_buffer;
-    WINO_DEBUG("tile_buffer_ptr = %x\n", tile_buffer_ptr);
-    for (int64_t h = ih; h < ih + TILE_IN_H; ++h) {
-      if (h >= src_h) {
-        memset(tile_buffer_ptr, 0, tile_h_stride * sizeof(float));
-      } else {
-        int64_t tw_start = iw;
-        int64_t tw_len = MAX(MIN(src_w, iw + TILE_IN_W) - tw_start, 0);
-        int64_t tr_pad = MAX(iw + TILE_IN_W - src_w, 0);
-#ifdef __DEBUG
-        assert(tw_len + tr_pad == TILE_IN_W);
-#endif
-        int64_t w = 0;
-        memcpy(tile_buffer_ptr + w * KERNEL_ONE_REG,
-               base_src + (h * src_w + tw_start) * KERNEL_ONE_REG,
-               tw_len * KERNEL_ONE_REG * sizeof(float));
-        w += tw_len;
-        memset(tile_buffer_ptr + w * KERNEL_ONE_REG, 0,
-               tr_pad * KERNEL_ONE_REG * sizeof(float));
-      }
-      tile_buffer_ptr += tile_h_stride;
-    }
-  }
+  const float *tile_src = tile_buffer;
+  int64_t tile_src_h_stride = tile_h_stride;
 
   __m512 zmm12, zmm13, zmm14;
   zmm12 = _mm512_set1_ps(2.0f);
@@ -146,12 +118,111 @@ void winograd_b4f3_srctrans_fp32_avx512(
   }
 }
 
+#ifdef USE_INLINE_ASM
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_ASM(4)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_ASM(5)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_ASM(6)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_ASM(7)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_ASM(8)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_ASM(9)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_ASM(10)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_ASM(11)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_ASM(12)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_ASM(13)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_ASM(14)
+#endif
+
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(1)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(2)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(3)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(4)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(5)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(6)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(7)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(8)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(9)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(10)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(11)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(12)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(13)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(14)
+
+winograd_b4f3_gemm_kernel_fp32_avx512_func_t
+    winograd_b4f3_gemm_kernel_fp32_avx512_o32_table[14] = {
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(1),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(2),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(3),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(4),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(5),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(6),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(7),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(8),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(9),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(10),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(11),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(12),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(13),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T14O32_FUNC(14),
+};
+
+#ifdef USE_INLINE_ASM
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_ASM(1)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_ASM(2)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_ASM(3)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_ASM(4)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_ASM(5)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_ASM(6)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_ASM(7)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_ASM(8)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_ASM(9)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_ASM(10)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_ASM(11)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_ASM(12)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_ASM(13)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_ASM(14)
+#endif
+
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(1)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(2)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(3)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(4)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(5)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(6)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(7)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(8)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(9)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(10)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(11)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(12)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(13)
+IMPLEMENT_WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(14)
+
+winograd_b4f3_gemm_kernel_fp32_avx512_func_t
+    winograd_b4f3_gemm_kernel_fp32_avx512_o16_table[14] = {
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(1),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(2),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(3),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(4),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(5),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(6),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(7),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(8),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(9),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(10),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(11),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(12),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(13),
+        WINO_B4F3_GEMM_KERNEL_FP32_AVX512_T31O16_FUNC(14),
+};
+
 void winograd_b4f3_gemm_kernel_fp32_avx512(int64_t oc_len, int64_t t_len,
                                            wgb4f3_kernel_params params) {
   if (oc_len == 2 * KERNEL_ONE_REG) {
-    WINOGRAD_B4F3_T14O32_KERNEL_AVX512(params, t_len);
+    winograd_b4f3_gemm_kernel_fp32_avx512_o32_table[t_len - 1](
+        (int64_t *)&params);
   } else if (oc_len == KERNEL_ONE_REG) {
-    WINOGRAD_B4F3_T31O16_KERNEL_AVX512(params, t_len);
+    winograd_b4f3_gemm_kernel_fp32_avx512_o16_table[t_len - 1](
+        (int64_t *)&params);
   } else {
     fprintf(stderr,
             "[ERROR %s] oc_len does not match the kernel shape. (Needs to be "
@@ -253,22 +324,5 @@ void winograd_b4f3_dsttrans_fp32_avx512(const float *dst_trans,
     _mm512_storeu_ps(dst_ptr + 1 * dst_h_stride, zmm2);
     _mm512_storeu_ps(dst_ptr + 2 * dst_h_stride, zmm4);
     _mm512_storeu_ps(dst_ptr + 3 * dst_h_stride, zmm6);
-  }
-}
-
-void winograd_b4f3_store_dst_fp32_avx512(const float *dst_trans,
-                                         const int64_t oh_len,
-                                         const int64_t ow_len,
-                                         const int64_t dst_h_stride,
-                                         float *dst) {
-  for (int64_t oh = 0; oh < oh_len; ++oh) {
-    const float *dst_trans_ptr = dst_trans + oh * TILE_OUT_W * KERNEL_ONE_REG;
-    float *dst_ptr = dst + oh * dst_h_stride;
-    for (int64_t ow = 0; ow < ow_len; ++ow) {
-      __m512 vres = _mm512_loadu_ps(dst_trans_ptr);
-      _mm512_storeu_ps(dst_ptr, vres);
-      dst_trans_ptr += KERNEL_ONE_REG;
-      dst_ptr += KERNEL_ONE_REG;
-    }
   }
 }
